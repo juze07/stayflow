@@ -6,7 +6,7 @@ name: Migrações (produção)
 on:
   push:
     branches: [main]
-    paths: ['supabase/migrations/**']
+    paths: ["supabase/migrations/**"]
   workflow_dispatch:
 
 concurrency:
