@@ -23,6 +23,8 @@ export type IssueListItem = {
   resolvedAt: string | null;
   property: { id: string; name: string } | null;
   assignee: { id: string; name: string } | null;
+  /** Reportado pelo inquilino no portal. */
+  fromTenant: boolean;
 };
 
 export type IssueDetail = IssueListItem & {
@@ -32,10 +34,12 @@ export type IssueDetail = IssueListItem & {
   estimatedCostCents: number | null;
   finalCostCents: number | null;
   sourceInspection: { id: string; taskId: string; taskTitle: string } | null;
+  /** Estadia de origem (só visível para administradores e gestores). */
+  stay: { id: string; guestName: string } | null;
 };
 
 const LIST_COLUMNS =
-  "id, title, category, status, priority, reported_at, resolved_at, assignee_id, property:properties (id, name)";
+  "id, title, category, status, priority, reported_at, resolved_at, assignee_id, stay_id, property:properties (id, name)";
 
 type IssueRow = {
   id: string;
@@ -46,6 +50,7 @@ type IssueRow = {
   reported_at: string;
   resolved_at: string | null;
   assignee_id: string | null;
+  stay_id: string | null;
   property: { id: string; name: string } | null;
 };
 
@@ -73,6 +78,7 @@ function toListItem(row: IssueRow, names: Map<string, string>): IssueListItem | 
     resolvedAt: row.resolved_at,
     property: row.property,
     assignee: row.assignee_id ? { id: row.assignee_id, name: names.get(row.assignee_id) ?? "Membro removido" } : null,
+    fromTenant: row.stay_id !== null,
   };
 }
 
@@ -143,7 +149,7 @@ export async function getIssue(businessId: string, issueId: string): Promise<Iss
       .from("maintenance_issues")
       .select(
         `${LIST_COLUMNS}, description, reported_by, estimated_cost_cents, final_cost_cents,
-         inspection:inspections (id, task:tasks (id, title))`,
+         inspection:inspections (id, task:tasks (id, title)), stay:stays (id, guest_name)`,
       )
       .eq("business_id", businessId)
       .eq("id", issueId)
@@ -158,14 +164,35 @@ export async function getIssue(businessId: string, issueId: string): Promise<Iss
   return {
     ...item,
     description: data.description,
-    reportedBy: data.reported_by ? (names.get(data.reported_by) ?? "Membro removido") : null,
+    reportedBy: data.reported_by
+      ? (names.get(data.reported_by) ??
+        (data.stay_id ? `${data.stay?.guest_name ?? "inquilino"} (inquilino)` : "Membro removido"))
+      : null,
     reportedById: data.reported_by,
     estimatedCostCents: data.estimated_cost_cents,
     finalCostCents: data.final_cost_cents,
     sourceInspection: data.inspection?.task
       ? { id: data.inspection.id, taskId: data.inspection.task.id, taskTitle: data.inspection.task.title }
       : null,
+    stay: data.stay ? { id: data.stay.id, guestName: data.stay.guest_name } : null,
   };
+}
+
+/** Problemas reportados numa estadia (página da estadia). */
+export async function listStayIssues(businessId: string, stayId: string) {
+  const supabase = await createClient();
+  const [{ data, error }, names] = await Promise.all([
+    supabase
+      .from("maintenance_issues")
+      .select(LIST_COLUMNS)
+      .eq("business_id", businessId)
+      .eq("stay_id", stayId)
+      .order("reported_at", { ascending: false })
+      .limit(50),
+    memberNames(businessId),
+  ]);
+  if (error) throw error;
+  return (data ?? []).flatMap((row) => toListItem(row, names) ?? []);
 }
 
 /** Dados mínimos de um problema, para pré-preencher uma tarefa de reparação. Ignora ids inválidos. */

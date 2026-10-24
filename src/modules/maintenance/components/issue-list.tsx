@@ -1,6 +1,7 @@
 import { Wrench } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatDate } from "@/lib/format";
@@ -46,6 +47,7 @@ export function IssueList({ issues, timeZone, hideProperty, empty }: IssueListPr
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-1">
+                {issue.fromTenant && <Badge tone="primary">Inquilino</Badge>}
                 <IssueStatusBadge status={issue.status} />
                 <TaskPriorityBadge priority={issue.priority} />
                 <span className="ml-1 text-xs tabular-nums text-muted-foreground">

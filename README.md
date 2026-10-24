@@ -1,7 +1,8 @@
 # StayFlow
 
 Plataforma SaaS de gestão operacional para empresas de Alojamento Local: propriedades, tarefas, limpezas,
-inspeções, manutenção e despesas, com equipas e dados isolados por empresa.
+inspeções, manutenção, despesas, estadias e receitas, com equipas e dados isolados por empresa, e um portal para
+os inquilinos.
 
 > O nome é provisório. Para o alterar, defina `NEXT_PUBLIC_APP_NAME` ou edite `src/config/app.ts`.
 
@@ -15,6 +16,7 @@ inspeções, manutenção e despesas, com equipas e dados isolados por empresa.
 | 4    | Limpezas, listas de verificação, inspeções, manutenção                 | Concluída |
 | 5    | Despesas, relatórios, anexos e fotografias                             | Concluída |
 | 6    | Revisão de segurança, desempenho e guia de publicação                  | Concluída |
+| 7    | Estadias, portal do inquilino, pagamentos e painel de receitas         | Concluída |
 
 As secções ainda não implementadas aparecem na navegação com a etiqueta "Em breve" e uma página que o indica.
 
@@ -36,6 +38,8 @@ src/
 │  ├─ (app)/             área privada com navegação lateral
 │  ├─ auth/confirm/      destino dos links enviados por email
 │  ├─ convite/[token]/   aceitar convite para uma empresa
+│  ├─ estadia/[token]/   link de acesso do inquilino à sua estadia
+│  ├─ inquilino/         portal do inquilino (estadia, pagamentos, problemas)
 │  └─ onboarding/        criar a primeira empresa
 ├─ modules/              um módulo por domínio: schemas, queries, actions, components
 ├─ components/ui/        sistema de design (botões, campos, cartões, diálogos…)
@@ -56,6 +60,9 @@ supabase/
 - Triggers garantem regras de negócio no servidor (ex.: uma limpeza só fica concluída com a lista completa).
 - Os ficheiros vivem num bucket privado; o caminho começa pelo `business_id` e o Storage verifica-o.
 - O browser só conhece a chave pública. A chave secreta (`service_role`) não é usada pela aplicação.
+- Os inquilinos não são membros da empresa: não têm acesso a nenhuma tabela e só usam funções RPC que devolvem
+  as estadias ligadas à sua conta. Os pagamentos são registados manualmente (sem prestador de pagamentos); o
+  inquilino apenas avisa que pagou e a empresa confirma.
 - `npm run test:db` prova, tabela a tabela, que uma empresa não lê nem altera dados de outra.
 
 ## Desenvolvimento local

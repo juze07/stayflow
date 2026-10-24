@@ -25,6 +25,7 @@ async function BusinessSettings() {
         postalCode: settings.postal_code ?? "",
         city: settings.city ?? "",
         timezone: settings.timezone,
+        paymentInstructions: settings.payment_instructions ?? "",
       }}
     />
   );

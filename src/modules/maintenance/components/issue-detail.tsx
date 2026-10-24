@@ -171,6 +171,13 @@ export async function IssueDetailView({ params }: { params: Promise<{ id: string
                 {formatDateTime(issue.reportedAt, tz)}
                 {issue.reportedBy && ` por ${issue.reportedBy}`}
               </Detail>
+              {issue.stay && (
+                <Detail label="Estadia">
+                  <Link href={`/estadias/${issue.stay.id}`} className="font-medium text-primary hover:underline">
+                    {issue.stay.guestName}
+                  </Link>
+                </Detail>
+              )}
               {issue.resolvedAt && <Detail label="Resolvido">{formatDateTime(issue.resolvedAt, tz)}</Detail>}
               <Detail icon={<User />} label="Responsável">
                 {issue.assignee ? `${issue.assignee.name}${isAssignee ? " (você)" : ""}` : "Sem responsável"}

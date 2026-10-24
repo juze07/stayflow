@@ -82,6 +82,7 @@ export async function updateBusinessSettingsAction(input: BusinessSettingsInput)
       postal_code: values.postalCode,
       city: values.city,
       timezone: values.timezone,
+      payment_instructions: values.paymentInstructions,
     })
     .eq("id", business.id);
 

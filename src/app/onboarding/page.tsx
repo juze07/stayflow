@@ -10,6 +10,8 @@ import { CreateBusinessForm } from "@/modules/business/components/create-busines
 import { getMyPendingInvitations } from "@/modules/business/invitation-queries";
 import { requireSession } from "@/modules/business/queries";
 import { ROLE_LABELS } from "@/modules/business/roles";
+import { AcceptStayInvitationButton } from "@/modules/tenant/components/accept-stay-invitation-button";
+import { getMyPendingStayInvitations, hasTenantStays } from "@/modules/tenant/queries";
 
 export const metadata: Metadata = { title: "Criar empresa" };
 
@@ -17,7 +19,13 @@ async function Onboarding() {
   const context = await requireSession();
   if (context.active) redirect("/dashboard");
 
-  const invitations = await getMyPendingInvitations();
+  // Inquilinos (sem empresa) vão para o seu portal.
+  const [invitations, stayInvitations, isTenant] = await Promise.all([
+    getMyPendingInvitations(),
+    getMyPendingStayInvitations(),
+    hasTenantStays(),
+  ]);
+  if (isTenant) redirect("/inquilino");
 
   return (
     <div className="space-y-6">
@@ -35,8 +43,24 @@ async function Onboarding() {
         </Card>
       ))}
 
+      {stayInvitations.map((invitation) => (
+        <Card key={invitation.token}>
+          <CardContent className="space-y-4">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">É inquilino?</p>
+              <p className="text-sm text-muted-foreground">
+                {invitation.businessName} associou-o à estadia em {invitation.propertyName}.
+              </p>
+            </div>
+            <AcceptStayInvitationButton token={invitation.token} />
+          </CardContent>
+        </Card>
+      ))}
+
       <AuthCard
-        title={invitations.length > 0 ? "Ou crie a sua própria empresa" : "Crie a sua empresa"}
+        title={
+          invitations.length > 0 || stayInvitations.length > 0 ? "Ou crie a sua própria empresa" : "Crie a sua empresa"
+        }
         description="A empresa agrupa as suas propriedades, a equipa e todos os registos. Os dados de cada empresa são privados."
       >
         <CreateBusinessForm />

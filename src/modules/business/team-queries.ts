@@ -87,7 +87,7 @@ export async function getBusinessSettings(businessId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("businesses")
-    .select("id, name, tax_id, email, phone, address_line, postal_code, city, timezone")
+    .select("id, name, tax_id, email, phone, address_line, postal_code, city, timezone, payment_instructions")
     .eq("id", businessId)
     .single();
 
