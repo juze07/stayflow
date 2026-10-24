@@ -160,7 +160,11 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
             <Card>
               <CardHeader>
                 <CardTitle>Despesas por dia</CardTitle>
-                <CardDescription>O registo de despesas chega na Fase 5; até lá o gráfico fica vazio.</CardDescription>
+                <CardDescription>
+                  <Link href="/despesas/relatorio" className="text-primary hover:underline">
+                    Ver relatório completo
+                  </Link>
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {expensesTotal === 0 ? (

@@ -15,7 +15,8 @@ Form + Zod 4 · Radix UI (pacote `radix-ui`) · Lucide · Recharts · Vitest · 
 - `src/modules/<domínio>/` `schemas.ts` (Zod, partilhado cliente/servidor), `queries.ts` (`server-only`),
   `actions.ts` (Server Actions), `components/`, `constants.ts`. Domínios: auth, business, profile, properties, tasks
   (inclui limpezas/inspeções: `TasksView fixedType`, lista e resultado), checklists (modelos, RPC
-  `save_checklist_template`), maintenance, dashboard.
+  `save_checklist_template`), maintenance, expenses (despesas e relatório, RPC `expense_report`), attachments (envio
+  direto do browser para o Storage + registo validado por trigger; `files.ts` remove ficheiros ao apagar), dashboard.
 - `src/components/ui/` design system; `src/components/layout/` navegação e esqueletos; `src/components/filters/`.
 - `src/lib/` supabase (server/client/proxy, `database.types.ts` gerado), `dates.ts` (fuso da empresa),
   `format.ts` (pt-PT), `search-params.ts` (filtros no URL, paginação, `toIlikePattern`), `action-result.ts`.

@@ -1,26 +1,26 @@
 import { ArrowLeft, Building2, CalendarClock, ClipboardCheck, Pencil, Plus, Tag, User } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatCentsInput, formatCurrency, formatDateTime } from "@/lib/format";
 import { requestTime } from "@/lib/now";
+import { AttachmentsSection } from "@/modules/attachments/components/attachments-section";
 import { requireBusiness } from "@/modules/business/queries";
 import { canManageOperations } from "@/modules/business/roles";
 import { TaskPriorityBadge } from "@/modules/tasks/components/task-badges";
 import { TaskList } from "@/modules/tasks/components/task-list";
 import { TASK_PRIORITY_LABELS } from "@/modules/tasks/constants";
 import { listTasks } from "@/modules/tasks/queries";
+import { ExpenseList } from "@/modules/expenses/components/expense-list";
+import { listIssueExpenses } from "@/modules/expenses/queries";
 import { ISSUE_CATEGORY_LABELS } from "../constants";
 import { getIssue } from "../queries";
 import { DeleteIssueButton } from "./delete-issue-button";
 import { FinalCostForm } from "./final-cost-form";
 import { IssueStatusBadge } from "./issue-badges";
 import { IssueStatusActions } from "./issue-status-actions";
-
-function centsToInput(cents: number | null): string {
-  return cents === null ? "" : (cents / 100).toFixed(2).replace(".", ",");
-}
 
 export async function IssueDetailView({ params }: { params: Promise<{ id: string }> }) {
   const [{ business, role, user }, { id }] = await Promise.all([requireBusiness(), params]);
@@ -30,10 +30,11 @@ export async function IssueDetailView({ params }: { params: Promise<{ id: string
   const canManage = canManageOperations(role);
   const isAssignee = issue.assignee?.id === user.id;
   const canUpdate = canManage || isAssignee;
-  const tasks = await listTasks(
-    { businessId: business.id, maintenanceIssueId: issue.id, status: "todas", page: 1 },
-    now,
-  );
+  const isReporter = issue.reportedById === user.id;
+  const [tasks, expenses] = await Promise.all([
+    listTasks({ businessId: business.id, maintenanceIssueId: issue.id, status: "todas", page: 1 }, now),
+    canManage ? listIssueExpenses(business.id, issue.id) : Promise.resolve([]),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -118,6 +119,37 @@ export async function IssueDetailView({ params }: { params: Promise<{ id: string
               empty={{ title: "Ainda não há tarefas para este problema" }}
             />
           </section>
+
+          <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+            <AttachmentsSection
+              businessId={business.id}
+              timeZone={tz}
+              parent={{ type: "maintenance_issue", id: issue.id }}
+              title="Fotografias"
+              description="O estado antes e depois da reparação."
+              canUpload={canUpdate || isReporter}
+              canManage={canManage}
+              userId={user.id}
+            />
+          </Suspense>
+
+          {canManage && (
+            <section className="space-y-3">
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-semibold text-foreground">Despesas</h2>
+                  <p className="text-sm text-muted-foreground">Custos registados para este problema.</p>
+                </div>
+                <Button variant="secondary" size="sm" asChild>
+                  <Link href={`/despesas/nova?problema=${issue.id}`}>
+                    <Plus aria-hidden />
+                    Registar despesa
+                  </Link>
+                </Button>
+              </div>
+              <ExpenseList expenses={expenses} hideProperty empty={{ title: "Sem despesas registadas" }} />
+            </section>
+          )}
         </div>
 
         <Card className="h-fit">
@@ -165,8 +197,7 @@ export async function IssueDetailView({ params }: { params: Promise<{ id: string
                 </Detail>
               )}
             </dl>
-            {canUpdate && <FinalCostForm issueId={issue.id} initialValue={centsToInput(issue.finalCostCents)} />}
-            <p className="text-xs text-muted-foreground">O registo da despesa e das fotografias chega na Fase 5.</p>
+            {canUpdate && <FinalCostForm issueId={issue.id} initialValue={formatCentsInput(issue.finalCostCents)} />}
           </CardContent>
         </Card>
       </div>

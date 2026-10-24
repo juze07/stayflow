@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { failure, GENERIC_ERROR, parseInput, success, type ActionResult } from "@/lib/action-result";
 import { zonedDateTimeToUtc } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
+import { attachmentPaths, removeStoredFiles } from "@/modules/attachments/files";
 import { requireBusiness } from "@/modules/business/queries";
 import { canManageOperations } from "@/modules/business/roles";
 import { idSchema } from "@/modules/business/schemas";
@@ -202,6 +203,20 @@ export async function deleteTaskAction(taskId: string): Promise<ActionResult> {
   if (!id.success) return failure(NOT_FOUND);
 
   const supabase = await createClient();
+  const { data: inspections } = await supabase
+    .from("inspections")
+    .select("id")
+    .eq("business_id", business.id)
+    .eq("task_id", id.data);
+  const paths = [
+    ...(await attachmentPaths(supabase, business.id, "task_id", [id.data])),
+    ...(await attachmentPaths(
+      supabase,
+      business.id,
+      "inspection_id",
+      (inspections ?? []).map((row) => row.id),
+    )),
+  ];
   const { data, error } = await supabase
     .from("tasks")
     .delete()
@@ -211,6 +226,8 @@ export async function deleteTaskAction(taskId: string): Promise<ActionResult> {
 
   if (error) return handleWriteError(error, "delete task failed");
   if (!data?.length) return failure(NOT_FOUND);
+
+  await removeStoredFiles(supabase, paths);
 
   revalidateTaskViews(data[0].property_id);
   redirect("/tarefas");

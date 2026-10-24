@@ -1,11 +1,13 @@
 import { ArrowLeft, Building2, CalendarClock, Clock, Pencil, User, Wrench } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/lib/format";
 import { requestTime } from "@/lib/now";
+import { AttachmentsSection } from "@/modules/attachments/components/attachments-section";
 import { requireBusiness } from "@/modules/business/queries";
 import { canManageOperations } from "@/modules/business/roles";
 import {
@@ -151,6 +153,25 @@ export async function TaskDetailView({ params }: { params: Promise<{ id: string 
               </CardContent>
             </Card>
           )}
+
+          <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+            <AttachmentsSection
+              businessId={business.id}
+              timeZone={tz}
+              parent={task.inspection ? { type: "inspection", id: task.inspection.id } : { type: "task", id: task.id }}
+              title="Fotografias"
+              description={
+                task.type === "cleaning"
+                  ? "Registe o estado em que deixou a propriedade."
+                  : task.type === "inspection"
+                    ? "Fotografe o que encontrou, sobretudo os problemas."
+                    : undefined
+              }
+              canUpload={canUpdate}
+              canManage={canManage}
+              userId={user.id}
+            />
+          </Suspense>
 
           <Card>
             <CardHeader>

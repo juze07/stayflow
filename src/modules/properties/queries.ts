@@ -130,7 +130,7 @@ export async function getProperty(businessId: string, propertyId: string): Promi
 }
 
 /**
- * Despesas recentes da propriedade (só leitura até à Fase 5). O RLS só as
+ * Despesas recentes da propriedade. O RLS só as
  * devolve a administradores e gestores.
  */
 export async function listPropertyExpenses(businessId: string, propertyId: string) {

@@ -28,6 +28,7 @@ export type IssueListItem = {
 export type IssueDetail = IssueListItem & {
   description: string | null;
   reportedBy: string | null;
+  reportedById: string | null;
   estimatedCostCents: number | null;
   finalCostCents: number | null;
   sourceInspection: { id: string; taskId: string; taskTitle: string } | null;
@@ -158,6 +159,7 @@ export async function getIssue(businessId: string, issueId: string): Promise<Iss
     ...item,
     description: data.description,
     reportedBy: data.reported_by ? (names.get(data.reported_by) ?? "Membro removido") : null,
+    reportedById: data.reported_by,
     estimatedCostCents: data.estimated_cost_cents,
     finalCostCents: data.final_cost_cents,
     sourceInspection: data.inspection?.task

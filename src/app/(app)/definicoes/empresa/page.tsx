@@ -44,9 +44,7 @@ export default function BusinessSettingsPage() {
       >
         <BusinessSettings />
       </Suspense>
-      <p className="text-sm text-muted-foreground">
-        O logótipo e as preferências de apresentação ficam disponíveis na Fase 5, com o envio de ficheiros.
-      </p>
+      <p className="text-sm text-muted-foreground">O logótipo e as preferências de apresentação chegam na Fase 6.</p>
     </div>
   );
 }
