@@ -21,6 +21,11 @@ export function parseCurrencyToCents(input: string): number | null {
   return Math.round(Number(normalized) * 100);
 }
 
+/** Cêntimos no formato de um campo de valor ("45,90"); null fica vazio. */
+export function formatCentsInput(cents: number | null): string {
+  return cents === null ? "" : (cents / 100).toFixed(2).replace(".", ",");
+}
+
 type DateInput = Date | string | number;
 
 function toDate(value: DateInput): Date {

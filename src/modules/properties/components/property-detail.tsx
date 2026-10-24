@@ -194,11 +194,12 @@ export async function PropertyDetailView({ params }: { params: Promise<{ id: str
           </Section>
 
           {canManage && (
-            <Section title="Despesas" description="O registo de despesas chega na Fase 5.">
+            <Section title="Despesas" description="Últimas despesas registadas nesta propriedade.">
               <SimpleList
                 empty="Sem despesas registadas."
                 items={expenses.map((expense) => ({
                   id: expense.id,
+                  href: `/despesas/${expense.id}`,
                   title: expense.description,
                   meta: formatDate(expense.incurredOn, "UTC"),
                   badge: (
@@ -206,6 +207,19 @@ export async function PropertyDetailView({ params }: { params: Promise<{ id: str
                   ),
                 }))}
               />
+              <div className="flex flex-wrap gap-2">
+                {!archived && (
+                  <Button variant="secondary" size="sm" asChild>
+                    <Link href={`/despesas/nova?propriedade=${property.id}`}>
+                      <Plus aria-hidden />
+                      Registar despesa
+                    </Link>
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href={`/despesas?propriedade=${property.id}`}>Ver todas</Link>
+                </Button>
+              </div>
             </Section>
           )}
         </div>

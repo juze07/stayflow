@@ -25,7 +25,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/limpezas", label: "Limpezas", icon: Sparkles, available: true },
   { href: "/inspecoes", label: "Inspeções", icon: ClipboardCheck, available: true },
   { href: "/manutencao", label: "Manutenção", icon: Wrench, available: true },
-  { href: "/despesas", label: "Despesas", icon: Receipt, available: false },
+  { href: "/despesas", label: "Despesas", icon: Receipt, available: true },
   { href: "/definicoes", label: "Definições", icon: Settings, available: true },
 ];
 

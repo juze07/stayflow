@@ -969,6 +969,16 @@ export type Database = {
           day: string;
         }[];
       };
+      expense_report: {
+        Args: { p_business_id: string; p_from: string; p_to: string };
+        Returns: {
+          category: string;
+          expense_count: number;
+          month: string;
+          property_id: string | null;
+          total_cents: number;
+        }[];
+      };
       dashboard_task_series: {
         Args: { p_business_id: string; p_from: string; p_timezone?: string; p_to: string };
         Returns: {

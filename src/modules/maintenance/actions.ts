@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { failure, GENERIC_ERROR, parseInput, success, type ActionResult } from "@/lib/action-result";
 import { createClient } from "@/lib/supabase/server";
+import { attachmentPaths, removeStoredFiles } from "@/modules/attachments/files";
 import { requireBusiness } from "@/modules/business/queries";
 import { canManageOperations } from "@/modules/business/roles";
 import { idSchema } from "@/modules/business/schemas";
@@ -167,6 +168,7 @@ export async function deleteIssueAction(issueId: string): Promise<ActionResult> 
   if (!id.success) return failure(NOT_FOUND);
 
   const supabase = await createClient();
+  const paths = await attachmentPaths(supabase, business.id, "maintenance_issue_id", [id.data]);
   const { data, error } = await supabase
     .from("maintenance_issues")
     .delete()
@@ -180,6 +182,7 @@ export async function deleteIssueAction(issueId: string): Promise<ActionResult> 
   }
   if (!data?.length) return failure(NOT_FOUND);
 
+  await removeStoredFiles(supabase, paths);
   revalidateIssueViews(undefined, data[0].property_id);
   redirect("/manutencao");
 }

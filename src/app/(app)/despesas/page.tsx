@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/layout/coming-soon";
+import { Suspense } from "react";
+import { ListSkeleton } from "@/components/layout/list-skeleton";
+import { ExpensesView } from "@/modules/expenses/components/expenses-view";
 
 export const metadata: Metadata = { title: "Despesas" };
 
-export default function Page() {
-  return <ComingSoon title="Despesas" description="Controlo interno das despesas operacionais." phase="Fase 5" />;
+export default function ExpensesPage({ searchParams }: PageProps<"/despesas">) {
+  return (
+    <Suspense fallback={<ListSkeleton filters={4} />}>
+      <ExpensesView searchParams={searchParams} />
+    </Suspense>
+  );
 }

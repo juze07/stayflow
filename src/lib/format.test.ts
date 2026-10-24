@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { firstName, formatCurrency, formatDate, formatDateTime, initials, parseCurrencyToCents } from "./format";
+import {
+  firstName,
+  formatCentsInput,
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+  initials,
+  parseCurrencyToCents,
+} from "./format";
 
 const nbsp = (value: string) => value.replace(/[  ]/g, " ");
 
@@ -49,5 +57,12 @@ describe("nomes", () => {
   it("gera iniciais", () => {
     expect(initials("Ana Maria Sousa")).toBe("AS");
     expect(initials(null, "joao@example.com")).toBe("JO");
+  });
+});
+
+describe("formatCentsInput", () => {
+  it("mostra cêntimos no formato dos campos de valor", () => {
+    expect(formatCentsInput(4590)).toBe("45,90");
+    expect(formatCentsInput(null)).toBe("");
   });
 });

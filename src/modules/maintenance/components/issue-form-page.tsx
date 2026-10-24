@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { formatCentsInput } from "@/lib/format";
 import { getParam, type SearchParams } from "@/lib/search-params";
 import { requireBusiness } from "@/modules/business/queries";
 import { canManageOperations } from "@/modules/business/roles";
@@ -10,10 +11,6 @@ import { listPropertyOptions } from "@/modules/properties/queries";
 import { listAssigneeOptions } from "@/modules/tasks/queries";
 import { getInspectionSource, getIssue } from "../queries";
 import { IssueForm } from "./issue-form";
-
-function centsToInput(cents: number | null): string {
-  return cents === null ? "" : (cents / 100).toFixed(2).replace(".", ",");
-}
 
 export async function NewIssueForm({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const [{ business, role }, params] = await Promise.all([requireBusiness(), searchParams]);
@@ -98,7 +95,7 @@ export async function EditIssueForm({ params }: { params: Promise<{ id: string }
         category: issue.category,
         priority: issue.priority,
         assigneeId: issue.assignee?.id ?? "",
-        estimatedCost: centsToInput(issue.estimatedCostCents),
+        estimatedCost: formatCentsInput(issue.estimatedCostCents),
         sourceInspectionId: "",
       }}
     />

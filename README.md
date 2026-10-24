@@ -13,7 +13,7 @@ inspeções, manutenção e despesas, com equipas e dados isolados por empresa.
 | 2    | Fundação: layout, design, Supabase, autenticação, empresa, equipa, RLS | Concluída |
 | 3    | Propriedades, tarefas, dashboard, pesquisa e filtros                   | Concluída |
 | 4    | Limpezas, listas de verificação, inspeções, manutenção                 | Concluída |
-| 5    | Despesas, relatórios, anexos e fotografias                             | Por fazer |
+| 5    | Despesas, relatórios, anexos e fotografias                             | Concluída |
 | 6    | Testes end-to-end, desempenho, preparação para produção                | Por fazer |
 
 As secções ainda não implementadas aparecem na navegação com a etiqueta "Em breve" e uma página que o indica.
