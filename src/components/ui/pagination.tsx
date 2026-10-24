@@ -13,7 +13,7 @@ type PaginationProps = {
 };
 
 const linkClass =
-  "inline-flex h-9 items-center gap-1 rounded-md border border-border bg-surface px-3 text-sm font-medium text-foreground hover:bg-muted";
+  "inline-flex h-8 items-center gap-1 rounded-md border border-border-strong bg-surface px-2.5 text-[13px] font-medium text-foreground shadow-xs transition-colors hover:bg-muted/60";
 
 export function Pagination({ pathname, params, page, pageSize, total }: PaginationProps) {
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
@@ -25,7 +25,7 @@ export function Pagination({ pathname, params, page, pageSize, total }: Paginati
 
   return (
     <nav className="flex items-center justify-between gap-3" aria-label="Paginação">
-      <p className="text-sm text-muted-foreground">
+      <p className="text-[13px] text-muted-foreground tabular-nums">
         {first}–{last} de {total}
       </p>
       {pageCount > 1 && (

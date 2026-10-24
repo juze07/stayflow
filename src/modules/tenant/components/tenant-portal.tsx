@@ -11,7 +11,6 @@ import { requestTime } from "@/lib/now";
 import { requireSession } from "@/modules/business/queries";
 import { ISSUE_STATUS_LABELS, ISSUE_STATUS_TONES } from "@/modules/maintenance/constants";
 import { PaymentStatusBadge } from "@/modules/payments/components/payment-badges";
-import { stayPeriod } from "@/modules/stays/components/stay-list";
 import { getMyIssues, getMyPayments, getMyPendingStayInvitations, getMyStays, type TenantStay } from "../queries";
 import { AcceptStayInvitationButton } from "./accept-stay-invitation-button";
 import { ReportIssueForm } from "./report-issue-form";
@@ -29,15 +28,15 @@ export async function TenantPortal() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-foreground">
+      <div className="space-y-1">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           Olá, {firstName(session.profile.fullName, session.user.email)}
         </h1>
         <p className="text-sm text-muted-foreground">A sua estadia, pagamentos e pedidos de reparação.</p>
       </div>
 
       {invitations.map((invitation) => (
-        <Card key={invitation.token}>
+        <Card key={invitation.token} className="border-primary/25 bg-primary-soft/40">
           <CardContent className="space-y-3">
             <p className="text-sm text-foreground">
               {invitation.businessName} convidou-o para a estadia em {invitation.propertyName}.
@@ -92,23 +91,38 @@ function StayCard({
 
   return (
     <section className="space-y-4" aria-labelledby={`stay-${stay.id}`}>
-      <Card>
-        <CardHeader>
-          <CardTitle id={`stay-${stay.id}`}>{stay.propertyName}</CardTitle>
-          <CardDescription>{stay.businessName}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <p className="flex items-start gap-2 text-foreground">
-            <CalendarDays className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-            {stayPeriod(stay.startsOn, stay.endsOn)}
-          </p>
-          <p className="flex items-start gap-2 text-foreground">
-            <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+      <Card className="overflow-hidden">
+        <div className="space-y-4 p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 space-y-0.5">
+              <p className="text-[13px] font-medium text-muted-foreground">{stay.businessName}</p>
+              <h2 id={`stay-${stay.id}`} className="text-lg font-semibold tracking-tight text-foreground">
+                {stay.propertyName}
+              </h2>
+            </div>
+            <StayPhaseBadge startsOn={stay.startsOn} endsOn={stay.endsOn} today={today} />
+          </div>
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border">
+            <div className="bg-surface-raised px-3.5 py-3">
+              <dt className="text-xs text-muted-foreground">Entrada</dt>
+              <dd className="mt-0.5 text-sm font-semibold text-foreground tabular-nums">
+                {formatDate(stay.startsOn, "UTC")}
+              </dd>
+            </div>
+            <div className="bg-surface-raised px-3.5 py-3">
+              <dt className="text-xs text-muted-foreground">Saída</dt>
+              <dd className="mt-0.5 text-sm font-semibold text-foreground tabular-nums">
+                {stay.endsOn ? formatDate(stay.endsOn, "UTC") : "Sem data definida"}
+              </dd>
+            </div>
+          </dl>
+          <p className="flex items-start gap-2 text-sm text-foreground">
+            <MapPin className="mt-0.5 size-4 shrink-0 text-subtle-foreground" aria-hidden />
             {stay.address}
           </p>
           {stay.accessInstructions ? (
-            <div className="rounded-md bg-muted/60 p-3">
-              <p className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <div className="rounded-lg border border-border bg-surface-raised p-3.5 text-sm">
+              <p className="mb-1.5 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                 <KeyRound className="size-4" aria-hidden />
                 Instruções de acesso
               </p>
@@ -119,33 +133,34 @@ function StayCard({
               <p className="text-xs text-muted-foreground">As instruções de acesso aparecem na véspera da entrada.</p>
             )
           )}
-          {(stay.businessPhone || stay.businessEmail) && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              {stay.businessPhone && (
-                <Button size="sm" variant="secondary" asChild>
-                  <a href={`tel:${stay.businessPhone.replace(/\s+/g, "")}`}>
-                    <Phone aria-hidden />
-                    Ligar
-                  </a>
-                </Button>
-              )}
-              {stay.businessEmail && (
-                <Button size="sm" variant="secondary" asChild>
-                  <a href={`mailto:${stay.businessEmail}`}>
-                    <Mail aria-hidden />
-                    Email
-                  </a>
-                </Button>
-              )}
-            </div>
-          )}
-        </CardContent>
+        </div>
+        {(stay.businessPhone || stay.businessEmail) && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-border bg-surface-raised px-5 py-3">
+            <p className="mr-auto text-[13px] text-muted-foreground">Precisa de ajuda?</p>
+            {stay.businessPhone && (
+              <Button size="sm" variant="secondary" asChild>
+                <a href={`tel:${stay.businessPhone.replace(/\s+/g, "")}`}>
+                  <Phone aria-hidden />
+                  Ligar
+                </a>
+              </Button>
+            )}
+            {stay.businessEmail && (
+              <Button size="sm" variant="secondary" asChild>
+                <a href={`mailto:${stay.businessEmail}`}>
+                  <Mail aria-hidden />
+                  Email
+                </a>
+              </Button>
+            )}
+          </div>
+        )}
       </Card>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Wallet className="size-4 text-muted-foreground" aria-hidden />
+            <Wallet className="size-4 text-subtle-foreground" aria-hidden />
             Pagamentos
           </CardTitle>
           <CardDescription>
@@ -169,7 +184,7 @@ function StayCard({
           {payments.length === 0 ? (
             <p className="text-sm text-muted-foreground">Ainda não há pagamentos registados.</p>
           ) : (
-            <ul className="divide-y divide-border">
+            <ul className="-my-3 divide-y divide-border">
               {payments.map((payment) => (
                 <li
                   key={payment.id}
@@ -209,7 +224,7 @@ function StayCard({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Wrench className="size-4 text-muted-foreground" aria-hidden />
+            <Wrench className="size-4 text-subtle-foreground" aria-hidden />
             Reportar um problema
           </CardTitle>
           <CardDescription>A empresa recebe o pedido e acompanha a reparação.</CardDescription>
@@ -233,4 +248,10 @@ function StayCard({
       </Card>
     </section>
   );
+}
+
+function StayPhaseBadge({ startsOn, endsOn, today }: { startsOn: string; endsOn: string | null; today: string }) {
+  if (startsOn > today) return <Badge tone="info">Próxima</Badge>;
+  if (endsOn && endsOn < today) return <Badge>Terminada</Badge>;
+  return <Badge tone="success">A decorrer</Badge>;
 }

@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 
 type AuthCardProps = {
   title: string;
@@ -8,19 +7,16 @@ type AuthCardProps = {
   children: ReactNode;
 };
 
+/** Título, formulário e rodapé dos ecrãs de autenticação (sem moldura, ao estilo das apps de produtividade). */
 export function AuthCard({ title, description, footer, children }: AuthCardProps) {
   return (
-    <>
-      <Card>
-        <CardContent className="space-y-6">
-          <div className="space-y-1 text-center">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
-            {description && <p className="text-sm text-muted-foreground">{description}</p>}
-          </div>
-          {children}
-        </CardContent>
-      </Card>
-      {footer && <p className="mt-6 text-center text-sm text-muted-foreground">{footer}</p>}
-    </>
+    <div className="space-y-7">
+      <div className="space-y-1.5">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+        {description && <p className="text-sm text-muted-foreground">{description}</p>}
+      </div>
+      {children}
+      {footer && <p className="border-t border-border pt-5 text-sm text-muted-foreground">{footer}</p>}
+    </div>
   );
 }

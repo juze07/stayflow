@@ -129,11 +129,7 @@ export async function TasksView({ searchParams, fixedType }: TasksViewProps) {
         description={page?.description ?? "Limpezas, inspeções, manutenção e outras tarefas das propriedades."}
         actions={
           <>
-            <div
-              className="inline-flex rounded-md border border-border bg-surface p-0.5"
-              role="group"
-              aria-label="Vista"
-            >
+            <div className="inline-flex rounded-lg border border-border bg-muted p-0.5" role="group" aria-label="Vista">
               <ViewLink href={buildHref(basePath, { ...parsed.values })} active={!isCalendar} icon="list">
                 Lista
               </ViewLink>
@@ -292,8 +288,10 @@ function ViewLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "inline-flex h-9 items-center gap-1.5 rounded px-3 text-sm font-medium",
-        active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:text-foreground",
+        "inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-all sm:h-8",
+        active
+          ? "bg-surface text-foreground shadow-raised ring-1 ring-border"
+          : "text-muted-foreground hover:text-foreground",
       )}
     >
       <Icon className="size-4" aria-hidden />

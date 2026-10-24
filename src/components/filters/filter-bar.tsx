@@ -56,7 +56,7 @@ export function FilterBar({ fields, values, preserve, className }: FilterBarProp
       {fields.map((field) => {
         const id = `filtro-${field.name}`;
         return (
-          <div key={field.name} className={cn("min-w-0", field.type === "search" ? "sm:w-64" : "sm:w-44")}>
+          <div key={field.name} className={cn("min-w-0", field.type === "search" ? "sm:w-64" : "sm:w-48")}>
             <label htmlFor={id} className="mb-1 block text-xs font-medium text-muted-foreground">
               {field.label}
             </label>

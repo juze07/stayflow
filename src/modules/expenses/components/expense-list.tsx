@@ -25,7 +25,7 @@ export function ExpenseList({ expenses, hideProperty, empty }: ExpenseListProps)
           <li key={expense.id}>
             <Link
               href={`/despesas/${expense.id}`}
-              className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted/40"
+              className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-muted/50"
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">{expense.description}</p>
