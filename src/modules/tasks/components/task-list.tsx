@@ -7,7 +7,7 @@ import { formatDate, formatTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { TASK_TYPE_LABELS, isOverdue } from "../constants";
 import type { TaskListItem } from "../queries";
-import { OverdueBadge, TaskPriorityBadge, TaskStatusBadge } from "./task-badges";
+import { InspectionResultBadge, OverdueBadge, TaskPriorityBadge, TaskStatusBadge } from "./task-badges";
 
 type TaskListProps = {
   tasks: TaskListItem[];
@@ -67,7 +67,10 @@ export function TaskList({ tasks, timeZone, now, hideProperty, empty }: TaskList
                   <Link href={`/tarefas/${task.id}`} className="font-medium text-foreground hover:underline">
                     {task.title}
                   </Link>
-                  <p className="text-xs text-muted-foreground">{TASK_TYPE_LABELS[task.type]}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {TASK_TYPE_LABELS[task.type]}
+                    {task.checklist && ` · ${checklistLabel(task.checklist)}`}
+                  </p>
                 </td>
                 {!hideProperty && <td className="px-4 py-3 text-muted-foreground">{task.property?.name ?? "—"}</td>}
                 <td className="px-4 py-3 whitespace-nowrap tabular-nums">
@@ -78,6 +81,7 @@ export function TaskList({ tasks, timeZone, now, hideProperty, empty }: TaskList
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-1">
                     <TaskStatusBadge status={task.status} />
+                    {task.inspectionResult && <InspectionResultBadge result={task.inspectionResult} />}
                     {overdue && <OverdueBadge />}
                     <TaskPriorityBadge priority={task.priority} />
                   </div>
@@ -108,11 +112,13 @@ export function TaskList({ tasks, timeZone, now, hideProperty, empty }: TaskList
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {TASK_TYPE_LABELS[task.type]}
+                  {task.checklist && ` · ${checklistLabel(task.checklist)}`}
                   {!hideProperty && task.property && ` · ${task.property.name}`}
                   {` · ${task.assignee?.name ?? "Sem responsável"}`}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   <TaskStatusBadge status={task.status} />
+                  {task.inspectionResult && <InspectionResultBadge result={task.inspectionResult} />}
                   {overdue && <OverdueBadge />}
                   <TaskPriorityBadge priority={task.priority} />
                 </div>
@@ -123,4 +129,8 @@ export function TaskList({ tasks, timeZone, now, hideProperty, empty }: TaskList
       </ul>
     </Card>
   );
+}
+
+function checklistLabel({ done, total }: { done: number; total: number }) {
+  return `lista ${done}/${total}`;
 }

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/layout/coming-soon";
+import { Suspense } from "react";
+import { ListSkeleton } from "@/components/layout/list-skeleton";
+import { TasksView } from "@/modules/tasks/components/tasks-view";
 
 export const metadata: Metadata = { title: "Limpezas" };
 
-export default function Page() {
+export default function Page({ searchParams }: PageProps<"/limpezas">) {
   return (
-    <ComingSoon
-      title="Limpezas"
-      description="Organize limpezas com listas de verificação e fotografias."
-      phase="Fase 4"
-    />
+    <Suspense fallback={<ListSkeleton filters={4} />}>
+      <TasksView searchParams={searchParams} fixedType="cleaning" />
+    </Suspense>
   );
 }

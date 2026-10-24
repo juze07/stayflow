@@ -29,6 +29,7 @@ describe("describeActivity", () => {
   it("só liga a páginas que existem", () => {
     expect(activityHref({ ...base, entityType: "task", action: "created" })).toBe("/tarefas/e1");
     expect(activityHref({ ...base, entityType: "task", action: "deleted" })).toBeNull();
+    expect(activityHref({ ...base, entityType: "maintenance_issue", action: "created" })).toBe("/manutencao/e1");
     expect(activityHref({ ...base, entityType: "expense", action: "created" })).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import { isCalendarDate, isClockTime } from "@/lib/dates";
 import { z } from "@/lib/zod";
-import { TASK_PRIORITIES, TASK_STATUSES, TASK_TYPES } from "./constants";
+import { INSPECTION_RESULTS, TASK_PRIORITIES, TASK_STATUSES, TASK_TYPES } from "./constants";
 
 const optionalLongText = z
   .string()
@@ -31,6 +31,9 @@ export const taskSchema = z.object({
     .nullable(),
   assigneeId: optionalId,
   priority: z.enum(TASK_PRIORITIES, { message: "Escolha a prioridade." }),
+  // Só usados ao criar: a lista de verificação e o problema de manutenção a resolver.
+  checklistTemplateId: optionalId,
+  maintenanceIssueId: optionalId,
 });
 export type TaskInput = z.input<typeof taskSchema>;
 export type TaskValues = z.output<typeof taskSchema>;
@@ -46,3 +49,21 @@ export const taskNotesSchema = z.object({
   notes: optionalLongText,
 });
 export type TaskNotesInput = z.input<typeof taskNotesSchema>;
+
+export const checklistItemSchema = z.object({
+  itemId: z.uuid(),
+  checked: z.boolean(),
+});
+export type ChecklistItemInput = z.input<typeof checklistItemSchema>;
+
+export const inspectionSchema = z
+  .object({
+    taskId: z.uuid(),
+    result: z.enum(INSPECTION_RESULTS, { message: "Escolha o resultado da inspeção." }),
+    observations: optionalLongText,
+  })
+  .refine((value) => value.result === "approved" || value.observations !== null, {
+    message: "Descreva o que foi encontrado.",
+    path: ["observations"],
+  });
+export type InspectionInput = z.input<typeof inspectionSchema>;

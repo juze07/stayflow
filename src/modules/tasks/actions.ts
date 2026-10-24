@@ -10,9 +10,13 @@ import { canManageOperations } from "@/modules/business/roles";
 import { idSchema } from "@/modules/business/schemas";
 import { TASK_STATUS_LABELS } from "./constants";
 import {
+  checklistItemSchema,
+  inspectionSchema,
   taskNotesSchema,
   taskSchema,
   taskStatusSchema,
+  type ChecklistItemInput,
+  type InspectionInput,
   type TaskInput,
   type TaskNotesInput,
   type TaskStatusInput,
@@ -38,8 +42,26 @@ function taskErrorMessage(error: DbError): { message: string; field?: keyof Task
   }
   if (text.includes("inspection_result_required")) {
     return {
-      message: "Uma inspeção só pode ser concluída com o resultado registado. O registo de inspeções chega na Fase 4.",
+      message: "Registe o resultado da inspeção antes de a concluir.",
     };
+  }
+  if (text.includes("inspection_observations_required")) {
+    return { message: "Descreva o que foi encontrado na inspeção." };
+  }
+  if (text.includes("task_closed")) {
+    return { message: "A tarefa já está concluída ou cancelada. Reabra-a para fazer alterações." };
+  }
+  if (text.includes("task_type_locked")) {
+    return { message: "O tipo de uma limpeza ou inspeção não pode ser alterado depois de criada.", field: "type" };
+  }
+  if (text.includes("checklist_kind_mismatch")) {
+    return { message: "Escolha uma lista de verificação do mesmo tipo da tarefa.", field: "checklistTemplateId" };
+  }
+  if (text.includes("maintenance_issue_property_mismatch")) {
+    return { message: "O problema de manutenção pertence a outra propriedade.", field: "propertyId" };
+  }
+  if (text.includes("staff can only check items")) {
+    return { message: "Como colaborador, pode apenas marcar os itens." };
   }
   if (text.includes("staff can only change status and notes")) {
     return { message: "Como colaborador, pode alterar apenas o estado e as notas das suas tarefas." };
@@ -50,6 +72,7 @@ function taskErrorMessage(error: DbError): { message: string; field?: keyof Task
   return null;
 }
 
+/** Campos editáveis. A lista de verificação e o problema associado só se definem ao criar. */
 function toRow(values: TaskValues, timeZone: string) {
   return {
     property_id: values.propertyId,
@@ -86,7 +109,13 @@ export async function createTaskAction(input: TaskInput): Promise<ActionResult> 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("tasks")
-    .insert({ business_id: business.id, ...toRow(parsed.data, business.timezone) })
+    .insert({
+      business_id: business.id,
+      ...toRow(parsed.data, business.timezone),
+      checklist_template_id:
+        parsed.data.type === "cleaning" || parsed.data.type === "inspection" ? parsed.data.checklistTemplateId : null,
+      maintenance_issue_id: parsed.data.maintenanceIssueId,
+    })
     .select("id")
     .single();
 
@@ -185,4 +214,52 @@ export async function deleteTaskAction(taskId: string): Promise<ActionResult> {
 
   revalidateTaskViews(data[0].property_id);
   redirect("/tarefas");
+}
+
+/** Marca ou desmarca um item da lista (responsável da tarefa ou gestores, garantido pelo RLS). */
+export async function setChecklistItemAction(input: ChecklistItemInput): Promise<ActionResult> {
+  const { business } = await requireBusiness();
+  const parsed = parseInput(checklistItemSchema, input);
+  if (!parsed.ok) return failure(NOT_FOUND);
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("task_checklist_items")
+    .update({ is_checked: parsed.data.checked })
+    .eq("business_id", business.id)
+    .eq("id", parsed.data.itemId)
+    .select("task_id");
+
+  if (error) return handleWriteError(error, "set checklist item failed");
+  if (!data?.length) return failure("Só o responsável pela tarefa e os gestores podem marcar a lista.");
+
+  revalidatePath(`/tarefas/${data[0].task_id}`);
+  return success();
+}
+
+/** Regista o resultado de uma inspeção, antes de a concluir. */
+export async function saveInspectionAction(input: InspectionInput): Promise<ActionResult> {
+  const { business } = await requireBusiness();
+  const parsed = parseInput(inspectionSchema, input);
+  if (!parsed.ok) return parsed;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("inspections")
+    .update({ result: parsed.data.result, observations: parsed.data.observations })
+    .eq("business_id", business.id)
+    .eq("task_id", parsed.data.taskId)
+    .select("id");
+
+  if (error) {
+    const known = taskErrorMessage(error);
+    if (known) return failure(known.message);
+    console.error("save inspection failed", error);
+    return failure(GENERIC_ERROR);
+  }
+  if (!data?.length) return failure("Só o responsável pela inspeção e os gestores podem registar o resultado.");
+
+  revalidateTaskViews();
+  revalidatePath(`/tarefas/${parsed.data.taskId}`);
+  return success(undefined, "Resultado guardado. Já pode concluir a inspeção.");
 }
