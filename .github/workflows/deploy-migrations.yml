@@ -6,7 +6,7 @@ name: Migrações (produção)
 on:
   push:
     branches: [main]
-    paths: ['supabase/migrations/**']
+    paths: ["supabase/migrations/**"]
   workflow_dispatch:
 
 concurrency:
@@ -35,4 +35,4 @@ jobs:
             exit 1
           fi
       - run: npx supabase link --project-ref "$SUPABASE_PROJECT_REF"
-      - run: npx supabase db push
+      - run: npx supabase db push --linked
