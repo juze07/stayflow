@@ -1,0 +1,7 @@
+<h2>Confirmar alteração de email</h2>
+<p>Confirme que pretende alterar o email da sua conta para {{ .NewEmail }}:</p>
+<p>
+  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email_change&next=/definicoes"
+    >Confirmar alteração</a
+  >
+</p>

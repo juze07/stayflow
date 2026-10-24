@@ -244,6 +244,21 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# Templates de email em português. Os links usam token_hash e apontam para
+# /auth/confirm (o RedirectTo enviado pela aplicação já inclui "?next=...").
+# No projeto alojado, copie o mesmo conteúdo em Authentication > Email Templates.
+[auth.email.template.confirmation]
+subject = "Confirme o seu email"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Recuperar palavra-passe"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.email_change]
+subject = "Confirmar alteração de email"
+content_path = "./supabase/templates/email_change.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

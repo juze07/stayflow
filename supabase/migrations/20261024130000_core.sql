@@ -438,6 +438,33 @@ begin
 end;
 $$;
 
+-- Convites pendentes para o email da conta autenticada (ecrã de onboarding).
+create or replace function public.my_pending_invitations()
+returns table (
+  token uuid,
+  business_name text,
+  role text,
+  expires_at timestamptz
+)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select i.token, b.name, i.role, i.expires_at
+  from public.invitations i
+  join public.businesses b on b.id = i.business_id
+  join auth.users u on u.id = (select auth.uid())
+  where i.email = lower(u.email)
+    and i.accepted_at is null
+    and i.revoked_at is null
+    and i.expires_at > now()
+  order by i.created_at desc;
+$$;
+
+revoke all on function public.my_pending_invitations() from public, anon;
+grant execute on function public.my_pending_invitations() to authenticated;
+
 revoke all on function public.get_invitation(uuid) from public, anon;
 revoke all on function public.accept_invitation(uuid) from public, anon;
 grant execute on function public.get_invitation(uuid) to authenticated;

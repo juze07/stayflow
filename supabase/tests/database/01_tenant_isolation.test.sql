@@ -5,7 +5,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(34);
+select plan(36);
 
 -- -----------------------------------------------------------------------------
 -- Preparação: três utilizadores e um contexto partilhado entre papéis.
@@ -74,6 +74,11 @@ values (pg_temp.ctx('business_a'), 'aaaaaaaa-0000-0000-0000-000000000001', 'Dete
 -- Colaborador aceita o convite.
 select pg_temp.login('22222222-2222-2222-2222-222222222222');
 select is(
+  (select count(*)::int from public.my_pending_invitations()),
+  1,
+  'o colaborador vê o convite pendente para o seu email'
+);
+select is(
   public.accept_invitation(pg_temp.ctx('invite_staff')),
   pg_temp.ctx('business_a'),
   'o colaborador aceita o convite com o email certo'
@@ -108,6 +113,7 @@ select is((select count(*)::int from public.task_checklist_items), 0, 'B não v�
 select is((select count(*)::int from public.expenses), 0, 'B não vê despesas de A');
 select is((select count(*)::int from public.memberships where business_id = pg_temp.ctx('business_a')), 0, 'B não vê membros de A');
 select is((select count(*)::int from public.invitations), 0, 'B não vê convites de A');
+select is((select count(*)::int from public.my_pending_invitations()), 0, 'B não recebe convites dirigidos a outros emails');
 select is((select count(*)::int from public.checklist_templates), 2, 'B só vê as suas listas de verificação');
 select is((select count(*)::int from public.activity_log where business_id = pg_temp.ctx('business_a')), 0, 'B não vê a atividade de A');
 select is(
