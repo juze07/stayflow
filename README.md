@@ -11,7 +11,7 @@ inspeções, manutenção e despesas, com equipas e dados isolados por empresa.
 | ---- | ---------------------------------------------------------------------- | --------- |
 | 1    | Análise e arquitetura                                                  | Concluída |
 | 2    | Fundação: layout, design, Supabase, autenticação, empresa, equipa, RLS | Concluída |
-| 3    | Propriedades, tarefas, dashboard, pesquisa e filtros                   | Por fazer |
+| 3    | Propriedades, tarefas, dashboard, pesquisa e filtros                   | Concluída |
 | 4    | Limpezas, listas de verificação, inspeções, manutenção                 | Por fazer |
 | 5    | Despesas, relatórios, anexos e fotografias                             | Por fazer |
 | 6    | Testes end-to-end, desempenho, preparação para produção                | Por fazer |
@@ -98,12 +98,9 @@ Regra importante: **todas as alterações à base de dados são feitas com uma n
 
 1. Crie um projeto em [supabase.com](https://supabase.com), na região **Central EU (Frankfurt)**. Guarde a
    palavra-passe da base de dados num gestor de palavras-passe.
-2. Ligue o projeto local e aplique as migrações:
-   ```bash
-   npx supabase login
-   npx supabase link --project-ref <ref-do-projeto>
-   npx supabase db push
-   ```
+2. Aplique as migrações. O workflow `.github/workflows/deploy-migrations.yml` fá-lo sozinho a cada merge na `main`
+   (ou à mão em Actions → "Migrações (produção)"), com os secrets do repositório `SUPABASE_ACCESS_TOKEN` e
+   `SUPABASE_DB_PASSWORD`. O _project ref_ está no próprio workflow.
 3. Em **Authentication → URL Configuration**:
    - _Site URL_: o endereço público da aplicação (ex.: `https://app.stayflow.pt`)
    - _Redirect URLs_: `https://app.stayflow.pt/**`

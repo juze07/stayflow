@@ -20,8 +20,8 @@ export type NavItem = {
 
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, available: true },
-  { href: "/propriedades", label: "Propriedades", icon: Building2, available: false },
-  { href: "/tarefas", label: "Tarefas", icon: ListTodo, available: false },
+  { href: "/propriedades", label: "Propriedades", icon: Building2, available: true },
+  { href: "/tarefas", label: "Tarefas", icon: ListTodo, available: true },
   { href: "/limpezas", label: "Limpezas", icon: Sparkles, available: false },
   { href: "/inspecoes", label: "Inspeções", icon: ClipboardCheck, available: false },
   { href: "/manutencao", label: "Manutenção", icon: Wrench, available: false },

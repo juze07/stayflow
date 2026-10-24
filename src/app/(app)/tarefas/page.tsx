@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/layout/coming-soon";
+import { Suspense } from "react";
+import { ListSkeleton } from "@/components/layout/list-skeleton";
+import { TasksView } from "@/modules/tasks/components/tasks-view";
 
 export const metadata: Metadata = { title: "Tarefas" };
 
-export default function Page() {
-  return <ComingSoon title="Tarefas" description="Planeie e acompanhe as tarefas da equipa." phase="Fase 3" />;
+export default function TasksPage({ searchParams }: PageProps<"/tarefas">) {
+  return (
+    <Suspense fallback={<ListSkeleton filters={4} />}>
+      <TasksView searchParams={searchParams} />
+    </Suspense>
+  );
 }
