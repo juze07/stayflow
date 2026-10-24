@@ -3,7 +3,7 @@ import { readState, signInWithUi } from "./fixtures";
 
 // Cada página privada abre sem erros, com título e sem scroll horizontal (telemóvel e computador).
 test("páginas privadas abrem sem erros", async ({ page }) => {
-  const { admin } = readState();
+  const { admin, tenant } = readState();
   const routes = [
     "/dashboard",
     "/propriedades",
@@ -18,6 +18,12 @@ test("páginas privadas abrem sem erros", async ({ page }) => {
     "/despesas",
     "/despesas/nova",
     "/despesas/relatorio",
+    "/estadias",
+    "/estadias/nova",
+    `/estadias/${tenant.stayId}`,
+    "/receitas",
+    "/receitas/pagamentos",
+    "/receitas/novo",
     "/definicoes/empresa",
     "/definicoes/equipa",
     "/definicoes/listas",

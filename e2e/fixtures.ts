@@ -8,6 +8,7 @@ export const PASSWORD = "Teste12345";
 export type E2EState = {
   admin: { email: string; businessId: string; propertyId: string };
   other: { email: string; businessId: string };
+  tenant: { email: string; stayId: string };
 };
 
 export function readState(): E2EState {

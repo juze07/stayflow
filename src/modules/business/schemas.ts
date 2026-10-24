@@ -49,6 +49,8 @@ export const businessSettingsSchema = z.object({
   }),
   city: optionalText(100),
   timezone: z.enum(timezoneValues, { message: "Escolha um fuso horário da lista." }),
+  /** Mostradas aos inquilinos com pagamentos por fazer (ex.: IBAN, MB WAY). */
+  paymentInstructions: optionalText(1000),
 });
 export type BusinessSettingsInput = z.input<typeof businessSettingsSchema>;
 

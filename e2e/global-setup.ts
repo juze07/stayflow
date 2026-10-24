@@ -45,9 +45,45 @@ export default async function globalSetup() {
     .single();
   if (error) throw error;
 
+  // Inquilino com estadia a decorrer e uma renda por pagar.
+  const tenantEmail = `carla.${stamp}@exemplo.pt`;
+  const { error: tenantError } = await admin.auth.admin.createUser({
+    email: tenantEmail,
+    password: PASSWORD,
+    email_confirm: true,
+    user_metadata: { full_name: "Carla" },
+  });
+  if (tenantError) throw tenantError;
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: stay, error: stayError } = await ana.client
+    .from("stays")
+    .insert({
+      business_id: ana.businessId,
+      property_id: property.id,
+      guest_name: "Carla",
+      guest_email: tenantEmail,
+      starts_on: today,
+    })
+    .select("id, invite_token")
+    .single();
+  if (stayError) throw stayError;
+  const { error: paymentError } = await ana.client.from("payments").insert({
+    business_id: ana.businessId,
+    property_id: property.id,
+    stay_id: stay.id,
+    description: "Renda",
+    amount_cents: 65000,
+    due_on: today,
+  });
+  if (paymentError) throw paymentError;
+  const tenant = await signedInClient(tenantEmail);
+  const { error: acceptError } = await tenant.rpc("accept_stay_invitation", { p_token: stay.invite_token });
+  if (acceptError) throw acceptError;
+
   const state: E2EState = {
     admin: { email: ana.email, businessId: ana.businessId, propertyId: property.id },
     other: { email: bruno.email, businessId: bruno.businessId },
+    tenant: { email: tenantEmail, stayId: stay.id },
   };
   writeFileSync(STATE_FILE, JSON.stringify(state));
 }

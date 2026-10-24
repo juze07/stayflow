@@ -1,11 +1,13 @@
 import {
   Building2,
+  CalendarDays,
   ClipboardCheck,
   LayoutDashboard,
   ListTodo,
   Receipt,
   Settings,
   Sparkles,
+  Wallet,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -25,6 +27,8 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/limpezas", label: "Limpezas", icon: Sparkles, available: true },
   { href: "/inspecoes", label: "Inspeções", icon: ClipboardCheck, available: true },
   { href: "/manutencao", label: "Manutenção", icon: Wrench, available: true },
+  { href: "/estadias", label: "Estadias", icon: CalendarDays, available: true },
+  { href: "/receitas", label: "Receitas", icon: Wallet, available: true },
   { href: "/despesas", label: "Despesas", icon: Receipt, available: true },
   { href: "/definicoes", label: "Definições", icon: Settings, available: true },
 ];

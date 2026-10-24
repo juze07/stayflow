@@ -9,6 +9,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { applyServerErrors } from "@/lib/forms";
 import type { z } from "@/lib/zod";
 import { updateBusinessSettingsAction } from "../actions";
@@ -88,6 +89,15 @@ export function BusinessSettingsForm({ defaultValues, readOnly }: BusinessSettin
                 </option>
               ))}
             </Select>
+          </FormField>
+
+          <FormField
+            label="Instruções de pagamento"
+            optional
+            error={errors.paymentInstructions?.message}
+            hint="Mostradas aos inquilinos com pagamentos por fazer (ex.: IBAN, número MB WAY)."
+          >
+            <Textarea rows={3} {...form.register("paymentInstructions")} />
           </FormField>
         </CardContent>
         {!readOnly && (

@@ -10,6 +10,7 @@ const validSettings = {
   postalCode: "",
   city: "",
   timezone: "Europe/Lisbon",
+  paymentInstructions: "",
 };
 
 describe("createBusinessSchema", () => {

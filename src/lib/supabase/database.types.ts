@@ -170,6 +170,7 @@ export type Database = {
           locale: string;
           logo_path: string | null;
           name: string;
+          payment_instructions: string | null;
           phone: string | null;
           postal_code: string | null;
           tax_id: string | null;
@@ -189,6 +190,7 @@ export type Database = {
           locale?: string;
           logo_path?: string | null;
           name: string;
+          payment_instructions?: string | null;
           phone?: string | null;
           postal_code?: string | null;
           tax_id?: string | null;
@@ -207,6 +209,7 @@ export type Database = {
           locale?: string;
           logo_path?: string | null;
           name?: string;
+          payment_instructions?: string | null;
           phone?: string | null;
           postal_code?: string | null;
           tax_id?: string | null;
@@ -532,6 +535,7 @@ export type Database = {
           resolved_at: string | null;
           source_inspection_id: string | null;
           status: string;
+          stay_id: string | null;
           title: string;
           updated_at: string;
         };
@@ -552,6 +556,7 @@ export type Database = {
           resolved_at?: string | null;
           source_inspection_id?: string | null;
           status?: string;
+          stay_id?: string | null;
           title: string;
           updated_at?: string;
         };
@@ -571,6 +576,7 @@ export type Database = {
           resolved_at?: string | null;
           source_inspection_id?: string | null;
           status?: string;
+          stay_id?: string | null;
           title?: string;
           updated_at?: string;
         };
@@ -609,6 +615,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "maintenance_issues_stay_fkey";
+            columns: ["business_id", "stay_id"];
+            isOneToOne: false;
+            referencedRelation: "stays";
+            referencedColumns: ["business_id", "id"];
           },
         ];
       };
@@ -652,6 +665,93 @@ export type Database = {
           {
             foreignKeyName: "memberships_user_id_fkey";
             columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      payments: {
+        Row: {
+          amount_cents: number;
+          business_id: string;
+          created_at: string;
+          created_by: string | null;
+          description: string;
+          due_on: string;
+          id: string;
+          method: string | null;
+          notes: string | null;
+          paid_on: string | null;
+          property_id: string;
+          status: string;
+          stay_id: string | null;
+          tenant_reference: string | null;
+          tenant_reported_at: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          business_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          description: string;
+          due_on: string;
+          id?: string;
+          method?: string | null;
+          notes?: string | null;
+          paid_on?: string | null;
+          property_id: string;
+          status?: string;
+          stay_id?: string | null;
+          tenant_reference?: string | null;
+          tenant_reported_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          amount_cents?: number;
+          business_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string;
+          due_on?: string;
+          id?: string;
+          method?: string | null;
+          notes?: string | null;
+          paid_on?: string | null;
+          property_id?: string;
+          status?: string;
+          stay_id?: string | null;
+          tenant_reference?: string | null;
+          tenant_reported_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payments_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payments_business_id_property_id_fkey";
+            columns: ["business_id", "property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["business_id", "id"];
+          },
+          {
+            foreignKeyName: "payments_business_id_stay_id_fkey";
+            columns: ["business_id", "stay_id"];
+            isOneToOne: false;
+            referencedRelation: "stays";
+            referencedColumns: ["business_id", "id"];
+          },
+          {
+            foreignKeyName: "payments_created_by_fkey";
+            columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -764,6 +864,93 @@ export type Database = {
           {
             foreignKeyName: "properties_created_by_fkey";
             columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      stays: {
+        Row: {
+          business_id: string;
+          cancelled_at: string | null;
+          created_at: string;
+          created_by: string | null;
+          ends_on: string | null;
+          guest_email: string;
+          guest_name: string;
+          guest_phone: string | null;
+          id: string;
+          invite_accepted_at: string | null;
+          invite_token: string;
+          notes: string | null;
+          property_id: string;
+          starts_on: string;
+          tenant_user_id: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          business_id: string;
+          cancelled_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          ends_on?: string | null;
+          guest_email: string;
+          guest_name: string;
+          guest_phone?: string | null;
+          id?: string;
+          invite_accepted_at?: string | null;
+          invite_token?: string;
+          notes?: string | null;
+          property_id: string;
+          starts_on: string;
+          tenant_user_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          business_id?: string;
+          cancelled_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          ends_on?: string | null;
+          guest_email?: string;
+          guest_name?: string;
+          guest_phone?: string | null;
+          id?: string;
+          invite_accepted_at?: string | null;
+          invite_token?: string;
+          notes?: string | null;
+          property_id?: string;
+          starts_on?: string;
+          tenant_user_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stays_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stays_business_id_property_id_fkey";
+            columns: ["business_id", "property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["business_id", "id"];
+          },
+          {
+            foreignKeyName: "stays_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stays_tenant_user_id_fkey";
+            columns: ["tenant_user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -961,6 +1148,7 @@ export type Database = {
     };
     Functions: {
       accept_invitation: { Args: { p_token: string }; Returns: string };
+      accept_stay_invitation: { Args: { p_token: string }; Returns: string };
       create_business: { Args: { p_name: string }; Returns: string };
       dashboard_expense_series: {
         Args: { p_business_id: string; p_from: string; p_to: string };
@@ -969,22 +1157,22 @@ export type Database = {
           day: string;
         }[];
       };
-      expense_report: {
-        Args: { p_business_id: string; p_from: string; p_to: string };
-        Returns: {
-          category: string;
-          expense_count: number;
-          month: string;
-          property_id: string | null;
-          total_cents: number;
-        }[];
-      };
       dashboard_task_series: {
         Args: { p_business_id: string; p_from: string; p_timezone?: string; p_to: string };
         Returns: {
           completed: number;
           day: string;
           scheduled: number;
+        }[];
+      };
+      expense_report: {
+        Args: { p_business_id: string; p_from: string; p_to: string };
+        Returns: {
+          category: string;
+          expense_count: number;
+          month: string;
+          property_id: string;
+          total_cents: number;
         }[];
       };
       get_invitation: {
@@ -996,6 +1184,17 @@ export type Database = {
           status: string;
         }[];
       };
+      get_stay_invitation: {
+        Args: { p_token: string };
+        Returns: {
+          business_name: string;
+          ends_on: string;
+          guest_email: string;
+          property_name: string;
+          starts_on: string;
+          status: string;
+        }[];
+      };
       my_pending_invitations: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -1003,6 +1202,74 @@ export type Database = {
           expires_at: string;
           role: string;
           token: string;
+        }[];
+      };
+      my_pending_stay_invitations: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          business_name: string;
+          property_name: string;
+          starts_on: string;
+          token: string;
+        }[];
+      };
+      my_stay_issues: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          category: string;
+          issue_id: string;
+          reported_at: string;
+          resolved_at: string;
+          status: string;
+          stay_id: string;
+          title: string;
+        }[];
+      };
+      my_stay_payments: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          amount_cents: number;
+          description: string;
+          due_on: string;
+          paid_on: string;
+          payment_id: string;
+          status: string;
+          stay_id: string;
+          tenant_reference: string;
+          tenant_reported_at: string;
+        }[];
+      };
+      my_stays: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          access_instructions: string;
+          address_line: string;
+          business_email: string;
+          business_name: string;
+          business_phone: string;
+          business_timezone: string;
+          city: string;
+          ends_on: string;
+          guest_name: string;
+          payment_instructions: string;
+          postal_code: string;
+          property_name: string;
+          starts_on: string;
+          stay_id: string;
+        }[];
+      };
+      report_stay_issue: {
+        Args: { p_category: string; p_description: string; p_stay_id: string; p_title: string };
+        Returns: string;
+      };
+      report_stay_payment: { Args: { p_payment_id: string; p_reference: string }; Returns: undefined };
+      revenue_report: {
+        Args: { p_business_id: string; p_from: string; p_to: string };
+        Returns: {
+          expense_cents: number;
+          month: string;
+          property_id: string;
+          revenue_cents: number;
         }[];
       };
       save_checklist_template: {
