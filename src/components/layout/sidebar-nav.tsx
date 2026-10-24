@@ -2,16 +2,34 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { isActivePath, NAV_ITEMS } from "./nav-items";
 
-export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname();
+type NavProps = { onNavigate?: () => void };
 
+/**
+ * Em páginas com endereço dinâmico (ex.: /tarefas/[id]) o caminho só é
+ * conhecido no pedido; até lá a navegação aparece sem item ativo.
+ */
+export function SidebarNav(props: NavProps) {
+  return (
+    <Suspense fallback={<NavList {...props} pathname={null} />}>
+      <CurrentNav {...props} />
+    </Suspense>
+  );
+}
+
+function CurrentNav(props: NavProps) {
+  const pathname = usePathname();
+  return <NavList {...props} pathname={pathname} />;
+}
+
+function NavList({ onNavigate, pathname }: NavProps & { pathname: string | null }) {
   return (
     <nav aria-label="Navegação principal" className="space-y-1">
       {NAV_ITEMS.map((item) => {
-        const active = isActivePath(pathname, item.href);
+        const active = pathname !== null && isActivePath(pathname, item.href);
         const Icon = item.icon;
         return (
           <Link

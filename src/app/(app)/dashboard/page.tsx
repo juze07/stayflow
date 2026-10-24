@@ -6,7 +6,7 @@ import { Greeting } from "@/modules/dashboard/components/greeting";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-export default function DashboardPage() {
+export default function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   return (
     <div className="space-y-6">
       <Suspense
@@ -20,7 +20,7 @@ export default function DashboardPage() {
         <Greeting />
       </Suspense>
       <Suspense fallback={<DashboardOverviewSkeleton />}>
-        <DashboardOverview />
+        <DashboardOverview searchParams={searchParams} />
       </Suspense>
     </div>
   );
