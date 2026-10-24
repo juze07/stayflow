@@ -14,7 +14,7 @@ inspeções, manutenção e despesas, com equipas e dados isolados por empresa.
 | 3    | Propriedades, tarefas, dashboard, pesquisa e filtros                   | Concluída |
 | 4    | Limpezas, listas de verificação, inspeções, manutenção                 | Concluída |
 | 5    | Despesas, relatórios, anexos e fotografias                             | Concluída |
-| 6    | Testes end-to-end, desempenho, preparação para produção                | Por fazer |
+| 6    | Revisão de segurança, desempenho e guia de publicação                  | Concluída |
 
 As secções ainda não implementadas aparecem na navegação com a etiqueta "Em breve" e uma página que o indica.
 
@@ -94,25 +94,10 @@ http://127.0.0.1:54324 para os ver.
 Regra importante: **todas as alterações à base de dados são feitas com uma nova migração** em
 `supabase/migrations/` (`npx supabase migration new nome`), nunca à mão no painel do Supabase.
 
-## Configurar o projeto Supabase (produção)
+## Publicar em produção
 
-1. Crie um projeto em [supabase.com](https://supabase.com), na região **Central EU (Frankfurt)**. Guarde a
-   palavra-passe da base de dados num gestor de palavras-passe.
-2. Aplique as migrações. O workflow `.github/workflows/deploy-migrations.yml` fá-lo sozinho a cada merge na `main`
-   (ou à mão em Actions → "Migrações (produção)"), com os secrets do repositório `SUPABASE_ACCESS_TOKEN` e
-   `SUPABASE_DB_PASSWORD`. O _project ref_ está no próprio workflow.
-3. Em **Authentication → URL Configuration**:
-   - _Site URL_: o endereço público da aplicação (ex.: `https://app.stayflow.pt`)
-   - _Redirect URLs_: `https://app.stayflow.pt/**`
-4. Em **Authentication → Providers → Email**: ative _Confirm email_. Em **Authentication → Policies** (ou
-   _Password security_), use no mínimo 8 caracteres com letras e números.
-5. Em **Authentication → Email Templates**, copie o conteúdo de `supabase/templates/confirmation.html` (Confirm
-   signup) e `supabase/templates/recovery.html` (Reset password), com os assuntos definidos em
-   `supabase/config.toml`.
-6. Em **Authentication → SMTP Settings**, configure um fornecedor de email (ex.: Resend, Postmark). O servidor
-   de email incluído no Supabase envia muito poucos emails por hora e não serve para clientes reais.
-7. Em **Project Settings → API**, copie o _Project URL_ e a _publishable key_ para as variáveis de ambiente da
-   plataforma de alojamento (ex.: Vercel), junto com `NEXT_PUBLIC_SITE_URL`.
+Siga o guia passo a passo em [`docs/PUBLICACAO.md`](docs/PUBLICACAO.md): projeto Supabase, migrações
+automáticas, URLs de autenticação, emails em português, SMTP, publicação na Vercel e verificação final.
 
 Nunca coloque a chave `service_role`/`sb_secret_` nem a palavra-passe da base de dados no código, no chat ou em
 variáveis `NEXT_PUBLIC_*`.
