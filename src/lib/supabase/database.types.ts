@@ -686,6 +686,7 @@ export type Database = {
           property_id: string;
           status: string;
           stay_id: string | null;
+          stripe_payment_intent_id: string | null;
           tenant_reference: string | null;
           tenant_reported_at: string | null;
           updated_at: string;
@@ -705,6 +706,7 @@ export type Database = {
           property_id: string;
           status?: string;
           stay_id?: string | null;
+          stripe_payment_intent_id?: string | null;
           tenant_reference?: string | null;
           tenant_reported_at?: string | null;
           updated_at?: string;
@@ -723,6 +725,7 @@ export type Database = {
           property_id?: string;
           status?: string;
           stay_id?: string | null;
+          stripe_payment_intent_id?: string | null;
           tenant_reference?: string | null;
           tenant_reported_at?: string | null;
           updated_at?: string;
@@ -870,6 +873,61 @@ export type Database = {
           },
         ];
       };
+      stay_bank_accounts: {
+        Row: {
+          account_holder_name: string | null;
+          bank_name: string | null;
+          bic: string | null;
+          business_id: string;
+          country: string | null;
+          created_at: string;
+          customer_id: string;
+          iban: string | null;
+          stay_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          account_holder_name?: string | null;
+          bank_name?: string | null;
+          bic?: string | null;
+          business_id: string;
+          country?: string | null;
+          created_at?: string;
+          customer_id: string;
+          iban?: string | null;
+          stay_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          account_holder_name?: string | null;
+          bank_name?: string | null;
+          bic?: string | null;
+          business_id?: string;
+          country?: string | null;
+          created_at?: string;
+          customer_id?: string;
+          iban?: string | null;
+          stay_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stay_bank_accounts_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stay_bank_accounts_business_id_stay_id_fkey";
+            columns: ["business_id", "stay_id"];
+            isOneToOne: false;
+            referencedRelation: "stays";
+            referencedColumns: ["business_id", "id"];
+          },
+        ];
+      };
       stays: {
         Row: {
           business_id: string;
@@ -953,6 +1011,42 @@ export type Database = {
             columns: ["tenant_user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      stripe_accounts: {
+        Row: {
+          account_id: string;
+          business_id: string;
+          charges_enabled: boolean;
+          created_at: string;
+          details_submitted: boolean;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          account_id: string;
+          business_id: string;
+          charges_enabled?: boolean;
+          created_at?: string;
+          details_submitted?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          business_id?: string;
+          charges_enabled?: boolean;
+          created_at?: string;
+          details_submitted?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stripe_accounts_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: true;
+            referencedRelation: "businesses";
             referencedColumns: ["id"];
           },
         ];
@@ -1225,6 +1319,17 @@ export type Database = {
           title: string;
         }[];
       };
+      my_stay_payment_options: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          account_holder_name: string;
+          bank_name: string;
+          bic: string;
+          iban: string;
+          online_payments: boolean;
+          stay_id: string;
+        }[];
+      };
       my_stay_payments: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -1275,6 +1380,80 @@ export type Database = {
       save_checklist_template: {
         Args: { p_business_id: string; p_items: Json; p_kind: string; p_name: string; p_template_id: string };
         Returns: string;
+      };
+      stripe_attach_payment_intent: {
+        Args: { p_payment_id: string; p_payment_intent_id: string; p_secret: string };
+        Returns: undefined;
+      };
+      stripe_event_processed: { Args: { p_event_id: string; p_secret: string }; Returns: boolean };
+      stripe_mark_payment_paid: {
+        Args: {
+          p_account_id: string;
+          p_amount_cents: number;
+          p_method: string;
+          p_payment_id: string;
+          p_payment_intent_id: string;
+          p_secret: string;
+        };
+        Returns: string;
+      };
+      stripe_payment_context: {
+        Args: { p_payment_id: string; p_secret: string };
+        Returns: {
+          amount_cents: number;
+          business_id: string;
+          description: string;
+          payment_id: string;
+          payment_intent_id: string;
+          status: string;
+          stay_id: string;
+        }[];
+      };
+      stripe_pending_payments_for_customer: {
+        Args: { p_account_id: string; p_customer_id: string; p_secret: string };
+        Returns: {
+          amount_cents: number;
+          business_id: string;
+          description: string;
+          payment_id: string;
+          payment_intent_id: string;
+          stay_id: string;
+        }[];
+      };
+      stripe_record_event: { Args: { p_event_id: string; p_secret: string; p_type: string }; Returns: undefined };
+      stripe_save_account: { Args: { p_account_id: string; p_business_id: string; p_secret: string }; Returns: string };
+      stripe_save_stay_customer: {
+        Args: { p_customer_id: string; p_secret: string; p_stay_id: string };
+        Returns: string;
+      };
+      stripe_save_stay_iban: {
+        Args: {
+          p_account_holder_name: string;
+          p_bank_name: string;
+          p_bic: string;
+          p_country: string;
+          p_iban: string;
+          p_secret: string;
+          p_stay_id: string;
+        };
+        Returns: undefined;
+      };
+      stripe_stay_context: {
+        Args: { p_secret: string; p_stay_id: string };
+        Returns: {
+          account_id: string;
+          business_id: string;
+          charges_enabled: boolean;
+          customer_id: string;
+          guest_email: string;
+          guest_name: string;
+          iban: string;
+          stay_id: string;
+        }[];
+      };
+      stripe_update_account: {
+        Args: { p_account_id: string; p_charges_enabled: boolean; p_details_submitted: boolean; p_secret: string };
+        Returns: undefined;
       };
     };
     Enums: {
