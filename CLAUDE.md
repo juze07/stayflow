@@ -50,5 +50,5 @@ Form + Zod 4 · Radix UI (pacote `radix-ui`) · Lucide · Recharts · Vitest · 
 ## Comandos
 
 `npm run dev` · `npm test` · `npm run lint` · `npm run typecheck` · `npm run build` · `npm run format` ·
-`npm run test:db` (precisa de `npx supabase start`) · `npm run db:reset` · `npm run db:types`.
-Antes de um PR: format, lint, typecheck, test, test:db, build (o CI corre o mesmo).
+`npm run test:db` (precisa de `npx supabase start`) · `npm run test:e2e` (Playwright em `e2e/`, após build) · `npm run db:reset` · `npm run db:types`.
+Antes de um PR: format, lint, typecheck, test, test:db, build, test:e2e (o CI corre o mesmo).
