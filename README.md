@@ -87,9 +87,14 @@ http://127.0.0.1:54324 para os ver.
 | `npm run typecheck` | Verificação de tipos TypeScript                     |
 | `npm test`          | Testes unitários (Vitest)                           |
 | `npm run test:db`   | Testes de RLS e regras de negócio na base de dados  |
+| `npm run test:e2e`  | Testes ponta a ponta (Playwright, ver abaixo)       |
 | `npm run db:reset`  | Recria a base de dados local a partir das migrações |
 | `npm run db:types`  | Regenera `src/lib/supabase/database.types.ts`       |
 | `npm run format`    | Formata o código com Prettier                       |
+
+Os testes ponta a ponta (`e2e/`) correm contra o build de produção e o Supabase local: `npm run build`, depois
+`E2E_SUPABASE_SECRET_KEY=<SECRET_KEY de npx supabase status> npm run test:e2e`. A chave secreta só serve para criar
+utilizadores de teste locais; a aplicação nunca a usa.
 
 Regra importante: **todas as alterações à base de dados são feitas com uma nova migração** em
 `supabase/migrations/` (`npx supabase migration new nome`), nunca à mão no painel do Supabase.

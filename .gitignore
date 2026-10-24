@@ -42,3 +42,6 @@ next-env.d.ts
 
 # exemplo de variáveis (sem segredos)
 !.env.example
+/e2e/.state.json
+/test-results/
+/playwright-report/
