@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isOverdue, nextStatuses } from "./constants";
-import { taskSchema } from "./schemas";
+import { inspectionSchema, taskSchema } from "./schemas";
 
 const valid = {
   propertyId: "0b5a3f0e-7f0e-4d5c-9b1a-1c2d3e4f5a6b",
@@ -12,6 +12,8 @@ const valid = {
   estimatedMinutes: 90,
   assigneeId: "",
   priority: "normal",
+  checklistTemplateId: "",
+  maintenanceIssueId: "",
 } as const;
 
 describe("taskSchema", () => {
@@ -49,5 +51,22 @@ describe("regras de estado", () => {
     expect(nextStatuses("pending")).toContain("in_progress");
     expect(nextStatuses("completed")).toEqual(["in_progress"]);
     expect(nextStatuses("cancelled")).toEqual(["pending"]);
+  });
+});
+
+describe("inspectionSchema", () => {
+  const taskId = "0b5a3f0e-7f0e-4d5c-9b1a-1c2d3e4f5a6b";
+
+  it("aceita uma aprovação sem observações", () => {
+    expect(inspectionSchema.safeParse({ taskId, result: "approved", observations: "" }).success).toBe(true);
+  });
+
+  it("exige observações quando há reservas ou reprovação", () => {
+    const result = inspectionSchema.safeParse({ taskId, result: "failed", observations: "  " });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toEqual(["observations"]);
+    expect(inspectionSchema.safeParse({ taskId, result: "approved_with_notes", observations: "Mancha" }).success).toBe(
+      true,
+    );
   });
 });

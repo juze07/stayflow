@@ -13,8 +13,9 @@ Form + Zod 4 · Radix UI (pacote `radix-ui`) · Lucide · Recharts · Vitest · 
 
 - `src/app/` páginas finas. `(auth)` login/registo; `(app)` área privada; `auth/confirm` links de email.
 - `src/modules/<domínio>/` `schemas.ts` (Zod, partilhado cliente/servidor), `queries.ts` (`server-only`),
-  `actions.ts` (Server Actions), `components/`, `constants.ts`. Domínios: auth, business, profile, properties, tasks,
-  dashboard.
+  `actions.ts` (Server Actions), `components/`, `constants.ts`. Domínios: auth, business, profile, properties, tasks
+  (inclui limpezas/inspeções: `TasksView fixedType`, lista e resultado), checklists (modelos, RPC
+  `save_checklist_template`), maintenance, dashboard.
 - `src/components/ui/` design system; `src/components/layout/` navegação e esqueletos; `src/components/filters/`.
 - `src/lib/` supabase (server/client/proxy, `database.types.ts` gerado), `dates.ts` (fuso da empresa),
   `format.ts` (pt-PT), `search-params.ts` (filtros no URL, paginação, `toIlikePattern`), `action-result.ts`.
@@ -39,7 +40,8 @@ Form + Zod 4 · Radix UI (pacote `radix-ui`) · Lucide · Recharts · Vitest · 
 
 - Todas as tabelas têm `business_id` + RLS com `private.user_business_ids()` / `user_business_ids_with_role()`.
 - FKs compostas `(business_id, x_id)` impedem ligações entre empresas. Regras de negócio em triggers
-  (ex.: colaborador só muda estado/notas; propriedade arquivada não recebe tarefas).
+  (ex.: colaborador só muda estado/notas; propriedade arquivada não recebe tarefas; a lista do modelo é copiada
+  para a tarefa ao criar; inspeções têm registo criado automaticamente e o tipo não muda).
 - Nunca usar `service_role` na app. Storage privado, caminho começa por `business_id`.
 - Alterações de esquema: sempre nova migração (`npx supabase migration new nome`) + teste pgTAP + `npm run db:types`.
 - Produção: o workflow `deploy-migrations.yml` aplica migrações ao fazer merge na `main`.

@@ -129,34 +129,6 @@ export async function getProperty(businessId: string, propertyId: string): Promi
   };
 }
 
-const MAINTENANCE_STATUS_LABELS: Record<string, string> = {
-  open: "Aberto",
-  investigating: "Em análise",
-  in_progress: "Em reparação",
-  resolved: "Resolvido",
-  cancelled: "Cancelado",
-};
-
-/** Problemas de manutenção da propriedade (só leitura até à Fase 4). */
-export async function listPropertyMaintenance(businessId: string, propertyId: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("maintenance_issues")
-    .select("id, title, status, priority, reported_at")
-    .eq("business_id", businessId)
-    .eq("property_id", propertyId)
-    .order("reported_at", { ascending: false })
-    .limit(10);
-  if (error) throw error;
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    title: row.title,
-    statusLabel: MAINTENANCE_STATUS_LABELS[row.status] ?? row.status,
-    open: ["open", "investigating", "in_progress"].includes(row.status),
-    reportedAt: row.reported_at,
-  }));
-}
-
 /**
  * Despesas recentes da propriedade (só leitura até à Fase 5). O RLS só as
  * devolve a administradores e gestores.

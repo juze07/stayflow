@@ -95,7 +95,7 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
           href="/tarefas?estado=atrasadas"
         />
         <StatCard label="Propriedades ativas" value={overview.activeProperties} icon={Building2} href="/propriedades" />
-        <StatCard label="Problemas em aberto" value={overview.openIssues} icon={Wrench} />
+        <StatCard label="Problemas em aberto" value={overview.openIssues} icon={Wrench} href="/manutencao" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -23,15 +23,34 @@ type TaskFormProps = {
   defaultValues: TaskInput;
   properties: Option[];
   assignees: Option[];
+  /** Modelos de lista ativos (só ao criar). */
+  templates?: (Option & { kind: "cleaning" | "inspection" })[];
+  /** Na edição, limpezas e inspeções não mudam de tipo. */
+  typeLocked?: boolean;
+  /** Problema de manutenção que esta tarefa vai resolver. */
+  maintenanceIssue?: Option | null;
   timeZoneLabel: string;
   cancelHref: string;
 };
 
-export function TaskForm({ taskId, defaultValues, properties, assignees, timeZoneLabel, cancelHref }: TaskFormProps) {
+export function TaskForm({
+  taskId,
+  defaultValues,
+  properties,
+  assignees,
+  templates = [],
+  typeLocked,
+  maintenanceIssue,
+  timeZoneLabel,
+  cancelHref,
+}: TaskFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const form = useForm<TaskInput, unknown, TaskValues>({ resolver: zodResolver(taskSchema), defaultValues });
   const { errors } = form.formState;
+  const type = useWatch({ control: form.control, name: "type" });
+  const templatesOfType = templates.filter((template) => template.kind === type);
+  const showTemplates = !taskId && (type === "cleaning" || type === "inspection");
 
   const onSubmit = form.handleSubmit(() => {
     setError(null);
@@ -49,6 +68,11 @@ export function TaskForm({ taskId, defaultValues, properties, assignees, timeZon
       <form onSubmit={onSubmit} noValidate>
         <CardContent className="space-y-4">
           {error && <Alert tone="danger">{error}</Alert>}
+          {maintenanceIssue && (
+            <Alert tone="info">
+              Esta tarefa fica ligada ao problema de manutenção &quot;{maintenanceIssue.name}&quot;.
+            </Alert>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Propriedade" error={errors.propertyId?.message}>
@@ -63,16 +87,61 @@ export function TaskForm({ taskId, defaultValues, properties, assignees, timeZon
                 ))}
               </Select>
             </FormField>
-            <FormField label="Tipo" error={errors.type?.message}>
-              <Select {...form.register("type")}>
-                {TASK_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {TASK_TYPE_LABELS[type]}
+            <FormField
+              label="Tipo"
+              error={errors.type?.message}
+              hint={typeLocked ? "Limpezas e inspeções não mudam de tipo depois de criadas." : undefined}
+            >
+              <Select
+                {...form.register("type", {
+                  // Ao mudar de tipo, propõe a primeira lista ativa desse tipo.
+                  onChange: (event: { target: { value: string } }) =>
+                    form.setValue(
+                      "checklistTemplateId",
+                      templates.find((template) => template.kind === event.target.value)?.id ?? "",
+                    ),
+                })}
+              >
+                {/* Tipo bloqueado: só a opção atual, para o valor continuar a ser enviado. */}
+                {(typeLocked ? TASK_TYPES.filter((option) => option === defaultValues.type) : TASK_TYPES).map(
+                  (option) => (
+                    <option key={option} value={option}>
+                      {TASK_TYPE_LABELS[option]}
+                    </option>
+                  ),
+                )}
+              </Select>
+            </FormField>
+          </div>
+
+          {showTemplates && (
+            <FormField
+              label="Lista de verificação"
+              optional
+              error={errors.checklistTemplateId?.message}
+              hint={
+                templatesOfType.length === 0 ? (
+                  <>
+                    Não há listas ativas deste tipo.{" "}
+                    <Link href="/definicoes/listas" className="font-medium text-primary hover:underline">
+                      Criar em Definições
+                    </Link>
+                  </>
+                ) : (
+                  "Os itens são copiados para a tarefa. Alterar o modelo depois não muda esta tarefa."
+                )
+              }
+            >
+              <Select {...form.register("checklistTemplateId")}>
+                <option value="">Sem lista</option>
+                {templatesOfType.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.name}
                   </option>
                 ))}
               </Select>
             </FormField>
-          </div>
+          )}
 
           <FormField
             label="Título"

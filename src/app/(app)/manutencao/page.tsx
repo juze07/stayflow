@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/layout/coming-soon";
+import { Suspense } from "react";
+import { ListSkeleton } from "@/components/layout/list-skeleton";
+import { IssuesView } from "@/modules/maintenance/components/issues-view";
 
 export const metadata: Metadata = { title: "Manutenção" };
 
-export default function Page() {
-  return <ComingSoon title="Manutenção" description="Registe e acompanhe problemas nas propriedades." phase="Fase 4" />;
+export default function MaintenancePage({ searchParams }: PageProps<"/manutencao">) {
+  return (
+    <Suspense fallback={<ListSkeleton filters={4} />}>
+      <IssuesView searchParams={searchParams} />
+    </Suspense>
+  );
 }

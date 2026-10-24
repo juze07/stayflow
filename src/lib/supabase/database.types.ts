@@ -995,6 +995,10 @@ export type Database = {
           token: string;
         }[];
       };
+      save_checklist_template: {
+        Args: { p_business_id: string; p_items: Json; p_kind: string; p_name: string; p_template_id: string };
+        Returns: string;
+      };
     };
     Enums: {
       [_ in never]: never;

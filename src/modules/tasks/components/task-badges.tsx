@@ -1,10 +1,13 @@
 import { AlertTriangle, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
+  INSPECTION_RESULT_LABELS,
+  INSPECTION_RESULT_TONES,
   TASK_PRIORITY_LABELS,
   TASK_PRIORITY_TONES,
   TASK_STATUS_LABELS,
   TASK_STATUS_TONES,
+  type InspectionResult,
   type TaskPriority,
   type TaskStatus,
 } from "../constants";
@@ -31,4 +34,8 @@ export function OverdueBadge() {
       Atrasada
     </Badge>
   );
+}
+
+export function InspectionResultBadge({ result }: { result: InspectionResult }) {
+  return <Badge tone={INSPECTION_RESULT_TONES[result]}>{INSPECTION_RESULT_LABELS[result]}</Badge>;
 }

@@ -105,3 +105,22 @@ export const STATUS_ACTION_LABELS: Record<TaskStatus, string> = {
   completed: "Concluir",
   cancelled: "Cancelar tarefa",
 };
+
+export const INSPECTION_RESULTS = ["approved", "approved_with_notes", "failed"] as const;
+export type InspectionResult = (typeof INSPECTION_RESULTS)[number];
+
+export const INSPECTION_RESULT_LABELS: Record<InspectionResult, string> = {
+  approved: "Aprovada",
+  approved_with_notes: "Aprovada com observações",
+  failed: "Reprovada",
+};
+
+export const INSPECTION_RESULT_TONES: Record<InspectionResult, Tone> = {
+  approved: "success",
+  approved_with_notes: "warning",
+  failed: "danger",
+};
+
+export function isInspectionResult(value: string): value is InspectionResult {
+  return (INSPECTION_RESULTS as readonly string[]).includes(value);
+}

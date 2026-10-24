@@ -18,6 +18,8 @@ type TaskCalendarProps = {
   timeZone: string;
   now: Date;
   /** Endereços para o mês anterior e seguinte (mantêm os filtros). */
+  /** Página onde o calendário está (tarefas, limpezas ou inspeções). */
+  basePath: string;
   previousHref: string;
   nextHref: string;
   todayHref: string;
@@ -123,7 +125,7 @@ export function TaskCalendar(props: TaskCalendarProps) {
                   {hidden > 0 && (
                     <li>
                       <Link
-                        href={buildHref("/tarefas", { de: day.date, ate: day.date, estado: "todas" })}
+                        href={buildHref(props.basePath, { de: day.date, ate: day.date, estado: "todas" })}
                         className="block px-1.5 text-xs font-medium text-muted-foreground hover:underline"
                       >
                         +{hidden} mais

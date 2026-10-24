@@ -10,9 +10,11 @@ import { requestTime } from "@/lib/now";
 import { requireBusiness } from "@/modules/business/queries";
 import { canManageOperations } from "@/modules/business/roles";
 import { TaskList } from "@/modules/tasks/components/task-list";
-import { TaskStatusBadge } from "@/modules/tasks/components/task-badges";
+import { IssueStatusBadge } from "@/modules/maintenance/components/issue-badges";
+import { listPropertyIssues } from "@/modules/maintenance/queries";
+import { InspectionResultBadge, TaskStatusBadge } from "@/modules/tasks/components/task-badges";
 import { listTasks } from "@/modules/tasks/queries";
-import { getProperty, listPropertyExpenses, listPropertyMaintenance } from "../queries";
+import { getProperty, listPropertyExpenses } from "../queries";
 import { ArchivePropertyButton } from "./archive-property-button";
 
 export async function PropertyDetailView({ params }: { params: Promise<{ id: string }> }) {
@@ -29,7 +31,7 @@ export async function PropertyDetailView({ params }: { params: Promise<{ id: str
       now,
     ),
     listTasks({ businessId: business.id, propertyId: property.id, type: "inspection", status: "todas", page: 1 }, now),
-    listPropertyMaintenance(business.id, property.id),
+    listPropertyIssues(business.id, property.id),
     canManage ? listPropertyExpenses(business.id, property.id) : Promise.resolve([]),
   ]);
 
@@ -116,7 +118,7 @@ export async function PropertyDetailView({ params }: { params: Promise<{ id: str
             />
           </Section>
 
-          <Section title="Inspeções" description="O resultado detalhado de cada inspeção chega na Fase 4.">
+          <Section title="Inspeções" description="As mais recentes, com o resultado registado.">
             <SimpleList
               empty="Ainda não há inspeções."
               items={inspections.items.slice(0, 10).map((task) => ({
@@ -124,7 +126,11 @@ export async function PropertyDetailView({ params }: { params: Promise<{ id: str
                 href: `/tarefas/${task.id}`,
                 title: task.title,
                 meta: formatDateTime(task.scheduledAt, tz),
-                badge: <TaskStatusBadge status={task.status} />,
+                badge: task.inspectionResult ? (
+                  <InspectionResultBadge result={task.inspectionResult} />
+                ) : (
+                  <TaskStatusBadge status={task.status} />
+                ),
               }))}
             />
           </Section>
@@ -155,16 +161,36 @@ export async function PropertyDetailView({ params }: { params: Promise<{ id: str
             </CardContent>
           </Card>
 
-          <Section title="Manutenção" description="O registo de problemas chega na Fase 4.">
+          <Section
+            title="Manutenção"
+            description="Problemas reportados nesta propriedade."
+            action={
+              <Link
+                href={`/manutencao?propriedade=${property.id}&estado=todos`}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Ver todos
+              </Link>
+            }
+          >
             <SimpleList
               empty="Sem problemas registados."
               items={maintenance.map((issue) => ({
                 id: issue.id,
+                href: `/manutencao/${issue.id}`,
                 title: issue.title,
                 meta: formatDate(issue.reportedAt, tz),
-                badge: <Badge tone={issue.open ? "warning" : "neutral"}>{issue.statusLabel}</Badge>,
+                badge: <IssueStatusBadge status={issue.status} />,
               }))}
             />
+            {!archived && (
+              <Button variant="secondary" size="sm" asChild>
+                <Link href={`/manutencao/novo?propriedade=${property.id}`}>
+                  <Plus aria-hidden />
+                  Reportar problema
+                </Link>
+              </Button>
+            )}
           </Section>
 
           {canManage && (

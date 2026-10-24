@@ -49,5 +49,6 @@ export function activityHref(item: ActivityLike): string | null {
   if (item.action === "deleted") return null;
   if (item.entityType === "task") return `/tarefas/${item.entityId}`;
   if (item.entityType === "property") return `/propriedades/${item.entityId}`;
+  if (item.entityType === "maintenance_issue") return `/manutencao/${item.entityId}`;
   return null;
 }

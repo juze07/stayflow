@@ -24,10 +24,39 @@ import { listAssigneeOptions, listTasks, listTasksInRange } from "../queries";
 import { TaskCalendar } from "./task-calendar";
 import { TaskList } from "./task-list";
 
-export async function TasksView({ searchParams }: { searchParams: Promise<SearchParams> }) {
+/** Páginas próprias de limpezas e inspeções: a mesma vista, com o tipo fixo. */
+const FIXED_TYPE_PAGES = {
+  cleaning: {
+    basePath: "/limpezas",
+    title: "Limpezas",
+    description: "Limpezas das propriedades, com a lista de verificação de cada uma.",
+    newLabel: "Nova limpeza",
+    emptyTitle: "Sem limpezas por fazer",
+  },
+  inspection: {
+    basePath: "/inspecoes",
+    title: "Inspeções",
+    description: "Inspeções das propriedades, com lista de verificação e resultado.",
+    newLabel: "Nova inspeção",
+    emptyTitle: "Sem inspeções por fazer",
+  },
+} as const;
+
+type TasksViewProps = {
+  searchParams: Promise<SearchParams>;
+  fixedType?: keyof typeof FIXED_TYPE_PAGES;
+};
+
+export async function TasksView({ searchParams, fixedType }: TasksViewProps) {
   const [{ business, role, user }, params] = await Promise.all([requireBusiness(), searchParams]);
   const now = requestTime();
   const parsed = parseTaskParams(params, { userId: user.id, timeZone: business.timezone, now });
+  const page = fixedType ? FIXED_TYPE_PAGES[fixedType] : null;
+  const basePath = page?.basePath ?? "/tarefas";
+  if (fixedType) {
+    parsed.values.tipo = undefined;
+    parsed.filters.type = fixedType;
+  }
   const canManage = canManageOperations(role);
   const isCalendar = parsed.view === "calendario";
 
@@ -55,12 +84,16 @@ export async function TasksView({ searchParams }: { searchParams: Promise<Search
         ...assignees.filter((m) => m.id !== user.id).map((m) => ({ value: m.id, label: m.name })),
       ],
     },
-    {
-      type: "select",
-      name: "tipo",
-      label: "Tipo",
-      options: TASK_TYPES.map((type) => ({ value: type, label: TASK_TYPE_LABELS[type] })),
-    },
+    ...(fixedType
+      ? []
+      : ([
+          {
+            type: "select",
+            name: "tipo",
+            label: "Tipo",
+            options: TASK_TYPES.map((type) => ({ value: type, label: TASK_TYPE_LABELS[type] })),
+          },
+        ] satisfies FilterField[])),
     {
       type: "select",
       name: "estado",
@@ -92,8 +125,8 @@ export async function TasksView({ searchParams }: { searchParams: Promise<Search
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Tarefas"
-        description="Limpezas, inspeções, manutenção e outras tarefas das propriedades."
+        title={page?.title ?? "Tarefas"}
+        description={page?.description ?? "Limpezas, inspeções, manutenção e outras tarefas das propriedades."}
         actions={
           <>
             <div
@@ -101,11 +134,11 @@ export async function TasksView({ searchParams }: { searchParams: Promise<Search
               role="group"
               aria-label="Vista"
             >
-              <ViewLink href={buildHref("/tarefas", { ...parsed.values })} active={!isCalendar} icon="list">
+              <ViewLink href={buildHref(basePath, { ...parsed.values })} active={!isCalendar} icon="list">
                 Lista
               </ViewLink>
               <ViewLink
-                href={buildHref("/tarefas", { ...viewParams, vista: "calendario" })}
+                href={buildHref(basePath, { ...viewParams, vista: "calendario" })}
                 active={isCalendar}
                 icon="calendar"
               >
@@ -114,9 +147,9 @@ export async function TasksView({ searchParams }: { searchParams: Promise<Search
             </div>
             {canManage && (
               <Button asChild>
-                <Link href={buildHref("/tarefas/nova", { propriedade: parsed.values.propriedade })}>
+                <Link href={buildHref("/tarefas/nova", { propriedade: parsed.values.propriedade, tipo: fixedType })}>
                   <Plus aria-hidden />
-                  Nova tarefa
+                  {page?.newLabel ?? "Nova tarefa"}
                 </Link>
               </Button>
             )}
@@ -133,13 +166,21 @@ export async function TasksView({ searchParams }: { searchParams: Promise<Search
       />
 
       {isCalendar ? (
-        <CalendarSection businessId={business.id} timeZone={business.timezone} now={now} parsed={parsed} />
+        <CalendarSection
+          businessId={business.id}
+          timeZone={business.timezone}
+          now={now}
+          parsed={parsed}
+          basePath={basePath}
+        />
       ) : (
         <ListSection
           businessId={business.id}
           timeZone={business.timezone}
           now={now}
           parsed={parsed}
+          basePath={basePath}
+          fixedType={fixedType}
           hasFilters={hasFilters}
           canManage={canManage}
           hasProperties={properties.some((p) => !p.archived)}
@@ -154,6 +195,7 @@ type SectionProps = {
   timeZone: string;
   now: Date;
   parsed: ReturnType<typeof parseTaskParams>;
+  basePath: string;
 };
 
 async function ListSection({
@@ -161,10 +203,18 @@ async function ListSection({
   timeZone,
   now,
   parsed,
+  basePath,
+  fixedType,
   hasFilters,
   canManage,
   hasProperties,
-}: SectionProps & { hasFilters: boolean; canManage: boolean; hasProperties: boolean }) {
+}: SectionProps & {
+  fixedType?: TasksViewProps["fixedType"];
+  hasFilters: boolean;
+  canManage: boolean;
+  hasProperties: boolean;
+}) {
+  const page = fixedType ? FIXED_TYPE_PAGES[fixedType] : null;
   const { items, total, pageSize } = await listTasks({ businessId, ...parsed.filters, page: parsed.page }, now);
 
   const empty = hasFilters
@@ -180,11 +230,11 @@ async function ListSection({
           ) : undefined,
         }
       : {
-          title: "Sem tarefas por fazer",
+          title: page?.emptyTitle ?? "Sem tarefas por fazer",
           description: canManage ? "Crie uma tarefa para a equipa." : "Não há tarefas por fazer neste momento.",
           action: canManage ? (
             <Button asChild>
-              <Link href="/tarefas/nova">Nova tarefa</Link>
+              <Link href={buildHref("/tarefas/nova", { tipo: fixedType })}>{page?.newLabel ?? "Nova tarefa"}</Link>
             </Button>
           ) : undefined,
         };
@@ -192,12 +242,12 @@ async function ListSection({
   return (
     <div className="space-y-4">
       <TaskList tasks={items} timeZone={timeZone} now={now} empty={empty} />
-      <Pagination pathname="/tarefas" params={parsed.values} page={parsed.page} pageSize={pageSize} total={total} />
+      <Pagination pathname={basePath} params={parsed.values} page={parsed.page} pageSize={pageSize} total={total} />
     </div>
   );
 }
 
-async function CalendarSection({ businessId, timeZone, now, parsed }: SectionProps) {
+async function CalendarSection({ businessId, timeZone, now, parsed, basePath }: SectionProps) {
   const { year, month } = parsed.month;
   const first = `${formatMonth(year, month)}-01`;
   const last = `${formatMonth(year, month, 1)}-01`;
@@ -217,9 +267,10 @@ async function CalendarSection({ businessId, timeZone, now, parsed }: SectionPro
       truncated={truncated}
       timeZone={timeZone}
       now={now}
-      previousHref={buildHref("/tarefas", { ...base, mes: formatMonth(year, month, -1) })}
-      nextHref={buildHref("/tarefas", { ...base, mes: formatMonth(year, month, 1) })}
-      todayHref={buildHref("/tarefas", base)}
+      basePath={basePath}
+      previousHref={buildHref(basePath, { ...base, mes: formatMonth(year, month, -1) })}
+      nextHref={buildHref(basePath, { ...base, mes: formatMonth(year, month, 1) })}
+      todayHref={buildHref(basePath, base)}
     />
   );
 }
