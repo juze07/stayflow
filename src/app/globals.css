@@ -5,9 +5,9 @@
  * Todas as cores vêm destes tokens: para mudar a marca, altere-os aqui.
  * Uso: bg-primary, text-muted-foreground, border-border, etc.
  *
- * Princípios: neutros frios e discretos, uma única cor de marca (verde pinho)
- * usada com parcimónia, bordas finas em vez de sombras fortes, tipografia
- * compacta com números tabulares.
+ * Princípios: identidade inspirada no azulejo (azul cobalto, ocre, cal),
+ * cor de marca usada com parcimónia, bordas finas em vez de sombras fortes,
+ * títulos com serifa e números tabulares.
  */
 @theme {
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
