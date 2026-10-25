@@ -11,7 +11,7 @@ import { getEnumParam, getParam, type SearchParams } from "@/lib/search-params";
 import { cn } from "@/lib/utils";
 import { requireBusiness } from "@/modules/business/queries";
 import { canManageOperations } from "@/modules/business/roles";
-import { StatCard } from "@/modules/dashboard/components/stat-card";
+import { StatCard, StatGroup } from "@/modules/dashboard/components/stat-card";
 import { REPORT_PERIOD_LABELS, REPORT_PERIODS } from "@/modules/expenses/constants";
 import { resolveReportRange } from "@/modules/expenses/report";
 import { listPropertyOptions } from "@/modules/properties/queries";
@@ -97,7 +97,7 @@ export async function RevenueView({ searchParams }: { searchParams: Promise<Sear
         ]}
       />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <StatGroup>
         <StatCard label="Receitas" value={formatCurrency(summary.revenueCents)} icon={Wallet} />
         <StatCard
           label="Despesas"
@@ -124,7 +124,7 @@ export async function RevenueView({ searchParams }: { searchParams: Promise<Sear
           }
           href={outstanding.overdueCount > 0 ? "/receitas/pagamentos?estado=em-atraso" : "/receitas/pagamentos"}
         />
-      </div>
+      </StatGroup>
 
       {outstanding.reportedCount > 0 && (
         <Card>
@@ -174,53 +174,51 @@ export async function RevenueView({ searchParams }: { searchParams: Promise<Sear
               <CardDescription>Despesas gerais (sem propriedade) aparecem à parte.</CardDescription>
             </CardHeader>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-y border-border bg-muted/40 text-left text-xs text-muted-foreground">
+              <table className="data-table mt-4 border-t border-border">
+                <thead>
                   <tr>
-                    <th scope="col" className="px-4 py-2 font-medium">
-                      Propriedade
-                    </th>
-                    <th scope="col" className="px-4 py-2 text-right font-medium">
+                    <th scope="col">Propriedade</th>
+                    <th scope="col" className="text-right">
                       Receitas
                     </th>
-                    <th scope="col" className="px-4 py-2 text-right font-medium">
+                    <th scope="col" className="text-right">
                       Despesas
                     </th>
-                    <th scope="col" className="px-4 py-2 text-right font-medium">
+                    <th scope="col" className="text-right">
                       Resultado
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody>
                   {summary.byProperty.map((group) => (
                     <tr key={group.key ?? "geral"}>
-                      <th scope="row" className="max-w-40 truncate px-4 py-2 text-left font-normal text-foreground">
+                      <th scope="row" className="max-w-40 truncate px-4 py-3 text-left font-medium text-foreground">
                         {group.key ? (propertyNames.get(group.key) ?? "Propriedade removida") : "Geral"}
                       </th>
-                      <td className="px-4 py-2 text-right">
+                      <td className="text-right">
                         <Money cents={group.revenueCents} />
                       </td>
-                      <td className="px-4 py-2 text-right">
+                      <td className="text-right">
                         <Money cents={group.expenseCents} />
                       </td>
-                      <td className="px-4 py-2 text-right font-medium">
+                      <td className="text-right">
                         <Money cents={group.profitCents} signed />
                       </td>
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="border-t border-border font-semibold text-foreground">
+                <tfoot className="border-t border-border bg-surface-raised font-semibold text-foreground">
                   <tr>
-                    <th scope="row" className="px-4 py-2 text-left">
+                    <th scope="row" className="px-4 py-3 text-left">
                       Total
                     </th>
-                    <td className="px-4 py-2 text-right">
+                    <td className="text-right">
                       <Money cents={summary.revenueCents} />
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="text-right">
                       <Money cents={summary.expenseCents} />
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="text-right">
                       <Money cents={summary.profitCents} signed />
                     </td>
                   </tr>

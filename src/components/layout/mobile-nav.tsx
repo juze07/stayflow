@@ -13,19 +13,19 @@ export function MobileNav({ businessSlot }: { businessSlot: ReactNode }) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        className="-ml-2 rounded-md p-2 text-muted-foreground hover:bg-muted lg:hidden"
+        className="-ml-2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:hidden"
         aria-label="Abrir menu"
       >
         <Menu className="size-5" aria-hidden />
       </SheetTrigger>
       <SheetContent title="Menu">
-        <div className="border-b border-border px-4 py-4">
+        <div className="flex h-14 items-center px-5">
           <Logo />
         </div>
-        <div className="flex-1 overflow-y-auto px-3 py-4">
+        <div className="flex-1 overflow-y-auto px-3 py-3">
           <SidebarNav onNavigate={() => setOpen(false)} />
         </div>
-        <div className="border-t border-border p-3">{businessSlot}</div>
+        <div className="p-3">{businessSlot}</div>
       </SheetContent>
     </Sheet>
   );

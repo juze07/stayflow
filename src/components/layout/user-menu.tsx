@@ -31,12 +31,12 @@ export function UserMenu({ fullName, email, role, activeBusinessId, activeBusine
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex w-full items-center gap-3 rounded-md p-2 text-left hover:bg-muted disabled:opacity-60"
+        className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 text-left transition-colors hover:bg-foreground/[0.04] disabled:opacity-60 data-[state=open]:bg-foreground/[0.04]"
         disabled={isPending}
       >
         <Avatar name={fullName} email={email} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-foreground">{fullName || email}</span>
+          <span className="block truncate text-[13px] font-medium text-foreground">{fullName || email}</span>
           <span className="block truncate text-xs text-muted-foreground">
             {activeBusinessName} · {ROLE_LABELS[role]}
           </span>

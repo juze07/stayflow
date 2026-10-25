@@ -1,11 +1,11 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // Cores validadas para daltonismo e contraste (ver --color-chart-* em globals.css).
 const CHART_1 = "var(--color-chart-1)";
 const CHART_2 = "var(--color-chart-2)";
-const AXIS = { fontSize: 12, fill: "var(--color-muted-foreground)" };
+const AXIS = { fontSize: 11, fill: "var(--color-subtle-foreground)" };
 
 function shortDay(day: string) {
   return `${day.slice(8, 10)}/${day.slice(5, 7)}`;
@@ -13,10 +13,11 @@ function shortDay(day: string) {
 
 const tooltipStyle = {
   contentStyle: {
-    borderRadius: 8,
+    borderRadius: 10,
     border: "1px solid var(--color-border)",
     fontSize: 13,
-    boxShadow: "0 4px 12px rgb(15 23 42 / 0.08)",
+    padding: "8px 12px",
+    boxShadow: "var(--shadow-overlay)",
   },
   labelStyle: { color: "var(--color-foreground)", fontWeight: 600 },
   cursor: { fill: "var(--color-muted)" },
@@ -27,18 +28,12 @@ export function TaskSeriesChart({ data }: { data: { day: string; scheduled: numb
     <div className="h-64 w-full" role="img" aria-label="Tarefas agendadas e concluídas por dia">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -16 }} barGap={2}>
-          <CartesianGrid vertical={false} stroke="var(--color-border)" />
+          <CartesianGrid vertical={false} stroke="var(--color-border)" strokeDasharray="3 3" />
           <XAxis dataKey="day" tickFormatter={shortDay} tick={AXIS} tickLine={false} axisLine={false} minTickGap={16} />
           <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} width={40} />
           <Tooltip {...tooltipStyle} labelFormatter={(label) => shortDay(String(label))} />
-          <Legend
-            iconType="circle"
-            iconSize={8}
-            wrapperStyle={{ fontSize: 13 }}
-            formatter={(value) => <span style={{ color: "var(--color-foreground)" }}>{value}</span>}
-          />
-          <Bar dataKey="scheduled" name="Agendadas" fill={CHART_2} radius={[4, 4, 0, 0]} maxBarSize={24} />
-          <Bar dataKey="completed" name="Concluídas" fill={CHART_1} radius={[4, 4, 0, 0]} maxBarSize={24} />
+          <Bar dataKey="scheduled" name="Agendadas" fill={CHART_2} radius={[3, 3, 0, 0]} maxBarSize={24} />
+          <Bar dataKey="completed" name="Concluídas" fill={CHART_1} radius={[3, 3, 0, 0]} maxBarSize={24} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -53,7 +48,7 @@ export function ExpenseSeriesChart({ data }: { data: { day: string; amountCents:
     <div className="h-56 w-full" role="img" aria-label="Despesas por dia">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={points} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-          <CartesianGrid vertical={false} stroke="var(--color-border)" />
+          <CartesianGrid vertical={false} stroke="var(--color-border)" strokeDasharray="3 3" />
           <XAxis dataKey="day" tickFormatter={shortDay} tick={AXIS} tickLine={false} axisLine={false} minTickGap={16} />
           <YAxis
             tick={AXIS}
@@ -67,7 +62,7 @@ export function ExpenseSeriesChart({ data }: { data: { day: string; amountCents:
             labelFormatter={(label) => shortDay(String(label))}
             formatter={(value) => [euros.format(Number(value)), "Despesas"]}
           />
-          <Bar dataKey="amount" name="Despesas" fill={CHART_1} radius={[4, 4, 0, 0]} maxBarSize={24} />
+          <Bar dataKey="amount" name="Despesas" fill={CHART_1} radius={[3, 3, 0, 0]} maxBarSize={24} />
         </BarChart>
       </ResponsiveContainer>
     </div>

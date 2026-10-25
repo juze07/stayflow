@@ -30,7 +30,7 @@ function CurrentTabs() {
 function Tabs({ pathname }: { pathname: string | null }) {
   return (
     <nav aria-label="Definições" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <ul className="flex gap-1 border-b border-border">
+      <ul className="flex gap-5 border-b border-border">
         {TABS.map((tab) => {
           const active =
             pathname !== null &&
@@ -41,9 +41,9 @@ function Tabs({ pathname }: { pathname: string | null }) {
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "-mb-px inline-block border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+                  "-mb-px inline-block border-b-2 py-2.5 text-sm font-medium whitespace-nowrap transition-colors",
                   active
-                    ? "border-primary text-primary"
+                    ? "border-foreground text-foreground"
                     : "border-transparent text-muted-foreground hover:text-foreground",
                 )}
               >

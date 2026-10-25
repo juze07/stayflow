@@ -287,7 +287,7 @@ function SimpleList({ items, empty }: { items: SimpleItem[]; empty: string }) {
           return (
             <li key={item.id}>
               {item.href ? (
-                <Link href={item.href} className="block hover:bg-muted/40">
+                <Link href={item.href} className="block transition-colors hover:bg-muted/50">
                   {content}
                 </Link>
               ) : (

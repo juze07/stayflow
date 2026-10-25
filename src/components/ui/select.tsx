@@ -10,7 +10,7 @@ import { fieldBaseClass } from "./input";
 export function Select({ className, children, ...props }: ComponentProps<"select">) {
   return (
     <div className="relative">
-      <select className={cn(fieldBaseClass, "h-10 appearance-none pr-9", className)} {...props}>
+      <select className={cn(fieldBaseClass, "h-10 cursor-pointer appearance-none pr-9 sm:h-9", className)} {...props}>
         {children}
       </select>
       <ChevronDown

@@ -16,13 +16,13 @@ async function TenantPortalData({ searchParams }: { searchParams: PageProps<"/in
 export default function TenantPage({ searchParams }: PageProps<"/inquilino">) {
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-14 w-full max-w-2xl items-center justify-between gap-3 px-4">
           <Logo />
           <SignOutButton className="w-auto" />
         </div>
       </header>
-      <main className="mx-auto w-full max-w-2xl px-4 py-6">
+      <main className="mx-auto w-full max-w-2xl animate-fade-up px-4 py-6 sm:py-10">
         <Suspense fallback={<ListSkeleton filters={0} rows={4} />}>
           <TenantPortalData searchParams={searchParams} />
         </Suspense>
