@@ -131,6 +131,47 @@ export async function createCardCheckout(
   return session.url;
 }
 
+/**
+ * O pagamento ficou pago com `paidIntentId`: fecha as páginas de cartão ainda
+ * abertas para ele e cancela a transferência que estava à espera de saldo,
+ * para o inquilino não pagar duas vezes. Pode ser repetida sem efeitos.
+ */
+export async function closeOtherPaymentAttempts(
+  stripe: Stripe,
+  accountId: string,
+  input: { paymentId: string; customerId: string | null; paidIntentId: string; previousIntentId: string | null },
+) {
+  const options = { stripeAccount: accountId };
+
+  if (input.customerId) {
+    const sessions = await stripe.checkout.sessions.list(
+      { customer: input.customerId, status: "open", limit: 100 },
+      options,
+    );
+    for (const session of sessions.data) {
+      if (session.metadata?.stayflow_payment_id === input.paymentId) {
+        await stripe.checkout.sessions.expire(session.id, {}, options);
+      }
+    }
+  }
+
+  if (input.previousIntentId && input.previousIntentId !== input.paidIntentId) {
+    const previous = await stripe.paymentIntents.retrieve(input.previousIntentId, {}, options);
+    if (previous.status !== "succeeded" && previous.status !== "canceled") {
+      // O saldo já aplicado volta para o cliente.
+      await stripe.paymentIntents.cancel(previous.id, {}, options);
+    }
+  }
+}
+
+/** Dinheiro recebido para um pagamento que já estava pago (ou cancelado): devolve-o. */
+export async function refundDuplicatePayment(stripe: Stripe, accountId: string, paymentIntentId: string) {
+  await stripe.refunds.create(
+    { payment_intent: paymentIntentId, reason: "duplicate" },
+    { stripeAccount: accountId, idempotencyKey: `stayflow-refund-${paymentIntentId}` },
+  );
+}
+
 export function paymentIntentMethod(paymentIntent: Pick<Stripe.PaymentIntent, "payment_method_types">) {
   return paymentIntent.payment_method_types.includes("customer_balance") ? "transfer" : "card";
 }

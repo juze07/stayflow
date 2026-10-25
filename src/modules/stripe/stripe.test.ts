@@ -134,6 +134,120 @@ describe("webhook", () => {
     });
   });
 
+  it("fecha as páginas de cartão abertas e cancela a transferência pendente do pagamento", async () => {
+    const db = fakeDb({
+      paymentContext: vi.fn(async () => ({
+        paymentId: PAYMENT_ID,
+        stayId: "s",
+        businessId: "b",
+        description: "Renda",
+        amountCents: 5000,
+        status: "pending",
+        paymentIntentId: "pi_saldo",
+      })),
+    });
+    const list = vi.fn(async () => ({
+      data: [
+        { id: "cs_mesmo", metadata: { stayflow_payment_id: PAYMENT_ID } },
+        { id: "cs_outro", metadata: { stayflow_payment_id: OTHER_PAYMENT_ID } },
+      ],
+    }));
+    const expire = vi.fn(async () => ({}));
+    const retrieve = vi.fn(async () => ({ id: "pi_saldo", status: "requires_action" }));
+    const cancel = vi.fn(async () => ({}));
+    const sdk = {
+      checkout: { sessions: { list, expire } },
+      paymentIntents: { retrieve, cancel },
+    } as unknown as Stripe;
+
+    const result = await handleStripeEvent(
+      event("payment_intent.succeeded", {
+        id: "pi_cartao",
+        customer: "cus_1",
+        amount_received: 5000,
+        payment_method_types: ["card"],
+        metadata: { stayflow_payment_id: PAYMENT_ID },
+      }),
+      { stripe: sdk, db },
+    );
+
+    expect(result).toBe("paid");
+    const options = { stripeAccount: "acct_Empresa1" };
+    expect(list).toHaveBeenCalledWith({ customer: "cus_1", status: "open", limit: 100 }, options);
+    expect(expire).toHaveBeenCalledTimes(1);
+    expect(expire).toHaveBeenCalledWith("cs_mesmo", {}, options);
+    expect(cancel).toHaveBeenCalledWith("pi_saldo", {}, options);
+  });
+
+  it("reembolsa um segundo pagamento do mesmo valor em dívida", async () => {
+    const paidContext = {
+      paymentId: PAYMENT_ID,
+      stayId: "s",
+      businessId: "b",
+      description: "Renda",
+      amountCents: 5000,
+      status: "paid",
+      paymentIntentId: "pi_primeiro",
+    };
+    const db = fakeDb({
+      paymentContext: vi.fn(async () => paidContext),
+      markPaymentPaid: vi.fn(async () => "already_paid" as const),
+    });
+    const create = vi.fn(async () => ({}));
+    const sdk = { refunds: { create } } as unknown as Stripe;
+
+    const result = await handleStripeEvent(
+      event("payment_intent.succeeded", {
+        id: "pi_segundo",
+        customer: "cus_1",
+        amount_received: 5000,
+        payment_method_types: ["card"],
+        metadata: { stayflow_payment_id: PAYMENT_ID },
+      }),
+      { stripe: sdk, db },
+    );
+
+    expect(result).toBe("refunded");
+    expect(create).toHaveBeenCalledWith(
+      { payment_intent: "pi_segundo", reason: "duplicate" },
+      { stripeAccount: "acct_Empresa1", idempotencyKey: "stayflow-refund-pi_segundo" },
+    );
+    expect(db.recordEvent).toHaveBeenCalledWith("evt_1", "payment_intent.succeeded");
+  });
+
+  it("não reembolsa quando o evento repete o pagamento que já ficou registado", async () => {
+    const db = fakeDb({
+      paymentContext: vi.fn(async () => ({
+        paymentId: PAYMENT_ID,
+        stayId: "s",
+        businessId: "b",
+        description: "Renda",
+        amountCents: 5000,
+        status: "paid",
+        paymentIntentId: "pi_1",
+      })),
+      markPaymentPaid: vi.fn(async () => "already_paid" as const),
+    });
+    const create = vi.fn();
+    const list = vi.fn(async () => ({ data: [] }));
+    const sdk = { refunds: { create }, checkout: { sessions: { list } } } as unknown as Stripe;
+
+    const result = await handleStripeEvent(
+      event("payment_intent.succeeded", {
+        id: "pi_1",
+        customer: "cus_1",
+        amount_received: 5000,
+        payment_method_types: ["customer_balance"],
+        metadata: { stayflow_payment_id: PAYMENT_ID },
+      }),
+      { stripe: sdk, db },
+    );
+
+    expect(result).toBe("already_paid");
+    expect(create).not.toHaveBeenCalled();
+    expect(list).toHaveBeenCalled();
+  });
+
   it("ignora pagamentos sem metadados da app e eventos da própria plataforma", async () => {
     const db = fakeDb();
     await handleStripeEvent(
