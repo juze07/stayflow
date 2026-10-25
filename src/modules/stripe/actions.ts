@@ -9,9 +9,14 @@ import { createClient } from "@/lib/supabase/server";
 import { requireBusiness, requireSession } from "@/modules/business/queries";
 import { canManageBusiness } from "@/modules/business/roles";
 import { idSchema } from "@/modules/business/schemas";
-import { STRIPE_ACCOUNT_COUNTRY } from "./constants";
 import { createStripeDb } from "./db";
-import { createCardCheckout, ensureStayIban } from "./service";
+import {
+  createCardCheckout,
+  createConnectedAccount,
+  createOnboardingLink,
+  ensureStayIban,
+  syncAccountStatus,
+} from "./service";
 
 const NOT_CONFIGURED = "Os pagamentos online ainda não estão configurados nesta aplicação.";
 const NOT_AVAILABLE = "Esta empresa ainda não aceita pagamentos online.";
@@ -40,34 +45,12 @@ export async function connectStripeAccountAction(): Promise<ActionResult> {
 
     let accountId = existing?.account_id;
     if (!accountId) {
-      // Conta "standard": a empresa tem o seu próprio painel Stripe, paga as
-      // comissões e responde por reembolsos e disputas.
-      const account = await stripe.accounts.create(
-        {
-          country: STRIPE_ACCOUNT_COUNTRY,
-          business_profile: { name: business.name },
-          controller: {
-            stripe_dashboard: { type: "full" },
-            fees: { payer: "account" },
-            losses: { payments: "stripe" },
-            requirement_collection: "stripe",
-          },
-          capabilities: {
-            card_payments: { requested: true },
-            bank_transfer_payments: { requested: true },
-          },
-          metadata: { stayflow_business_id: business.id },
-        },
-        { idempotencyKey: `stayflow-account-${business.id}` },
-      );
-      accountId = await db.saveAccount(business.id, account.id);
+      accountId = await db.saveAccount(business.id, await createConnectedAccount(stripe, business));
     }
 
-    const link = await stripe.accountLinks.create({
-      account: accountId,
-      type: "account_onboarding",
-      refresh_url: siteUrl("/definicoes/pagamentos?stripe=renovar"),
-      return_url: siteUrl("/definicoes/pagamentos?stripe=retorno"),
+    const link = await createOnboardingLink(stripe, accountId, {
+      refresh: siteUrl("/definicoes/pagamentos?stripe=renovar"),
+      return: siteUrl("/definicoes/pagamentos/retorno"),
     });
     url = link.url;
   } catch (error) {
@@ -95,12 +78,7 @@ export async function refreshStripeAccountAction(): Promise<ActionResult> {
     if (error) throw error;
     if (!data) return failure("Ainda não ligou uma conta Stripe.");
 
-    const account = await getStripe().accounts.retrieve(data.account_id);
-    await createStripeDb(env.STRIPE_DB_SECRET).updateAccount(
-      account.id,
-      account.charges_enabled ?? false,
-      account.details_submitted ?? false,
-    );
+    await syncAccountStatus(getStripe(), createStripeDb(env.STRIPE_DB_SECRET), data.account_id);
   } catch (error) {
     console.error("stripe refresh failed", error);
     return failure(GENERIC_ERROR);

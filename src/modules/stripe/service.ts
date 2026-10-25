@@ -1,9 +1,65 @@
 import type Stripe from "stripe";
-import { STRIPE_CURRENCY, VIRTUAL_IBAN_COUNTRY } from "./constants";
+import { STRIPE_ACCOUNT_COUNTRY, STRIPE_CURRENCY, VIRTUAL_IBAN_COUNTRY } from "./constants";
 import type { PaymentContext, StayContext, StripeDb } from "./db";
 import { parseVirtualIban, type VirtualIban } from "./schemas";
 
 type ConnectedStay = StayContext & { accountId: string };
+
+/**
+ * Conta ligada da empresa (Accounts v2): painel Stripe próprio, a Stripe cobra
+ * as comissões à empresa e responde por saldos negativos.
+ */
+export async function createConnectedAccount(stripe: Stripe, business: { id: string; name: string }): Promise<string> {
+  const account = await stripe.v2.core.accounts.create(
+    {
+      display_name: business.name,
+      dashboard: "full",
+      identity: { country: STRIPE_ACCOUNT_COUNTRY.toLowerCase() },
+      defaults: {
+        currency: STRIPE_CURRENCY,
+        responsibilities: { fees_collector: "stripe", losses_collector: "stripe" },
+      },
+      configuration: {
+        merchant: {
+          capabilities: {
+            card_payments: { requested: true },
+            sepa_bank_transfer_payments: { requested: true },
+          },
+        },
+      },
+      metadata: { stayflow_business_id: business.id },
+    },
+    { idempotencyKey: `stayflow-account-v2-${business.id}` },
+  );
+  return account.id;
+}
+
+export function createOnboardingLink(stripe: Stripe, accountId: string, urls: { refresh: string; return: string }) {
+  return stripe.v2.core.accountLinks.create({
+    account: accountId,
+    use_case: {
+      type: "account_onboarding",
+      account_onboarding: { refresh_url: urls.refresh, return_url: urls.return },
+    },
+  });
+}
+
+/** Estado atual da conta ligada, lido da Stripe. */
+export async function readAccountStatus(stripe: Stripe, accountId: string) {
+  const account = await stripe.v2.core.accounts.retrieve(accountId, {
+    include: ["configuration.merchant", "requirements"],
+  });
+  const chargesEnabled = account.configuration?.merchant?.capabilities?.card_payments?.status === "active";
+  const detailsSubmitted = chargesEnabled || (account.requirements?.entries?.length ?? 0) === 0;
+  return { chargesEnabled, detailsSubmitted };
+}
+
+/** Lê o estado na Stripe e guarda-o na base de dados. */
+export async function syncAccountStatus(stripe: Stripe, db: StripeDb, accountId: string) {
+  const status = await readAccountStatus(stripe, accountId);
+  await db.updateAccount(accountId, status.chargesEnabled, status.detailsSubmitted);
+  return status;
+}
 
 /** Cliente Stripe da estadia, na conta da empresa. Criado uma única vez. */
 export async function ensureStayCustomer(stripe: Stripe, db: StripeDb, stay: ConnectedStay): Promise<string> {
