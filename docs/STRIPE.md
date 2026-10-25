@@ -30,6 +30,9 @@ conta da empresa; a plataforma nunca o recebe.
   guarda o hash SHA-256 desse segredo.
 - Contas, clientes e ligações de pagamentos à Stripe não podem ser alterados pela API (RLS e triggers).
 - Valores sempre em cêntimos; um pagamento só fica recebido se o valor recebido cobrir o valor em dívida.
+- Sem pagamentos em duplicado: quando um pagamento fica pago, as páginas de cartão ainda abertas para ele são fechadas
+  e a transferência que esperava saldo é cancelada. Se mesmo assim entrar dinheiro para um pagamento já pago (ou
+  cancelado), a Stripe devolve-o ao inquilino (reembolso; numa transferência volta ao saldo do cliente).
 
 ## Testar em modo de teste
 
