@@ -8,12 +8,12 @@ export const metadata: Metadata = { title: "Dashboard" };
 
 export default function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <Suspense
         fallback={
           <div className="space-y-2">
-            <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-8 w-48" />
           </div>
         }
       >

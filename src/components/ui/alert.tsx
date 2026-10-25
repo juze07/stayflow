@@ -3,17 +3,20 @@ import { AlertCircle, CheckCircle2, Info, TriangleAlert } from "lucide-react";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-const alertVariants = cva("flex gap-3 rounded-md border p-3 text-sm [&_svg]:mt-0.5 [&_svg]:size-4 [&_svg]:shrink-0", {
-  variants: {
-    tone: {
-      info: "border-info/20 bg-info-soft text-info",
-      success: "border-success/20 bg-success-soft text-success",
-      warning: "border-warning/20 bg-warning-soft text-warning",
-      danger: "border-destructive/20 bg-destructive-soft text-destructive",
+const alertVariants = cva(
+  "flex gap-2.5 rounded-lg border p-3 text-sm leading-relaxed [&_svg]:mt-0.5 [&_svg]:size-4 [&_svg]:shrink-0",
+  {
+    variants: {
+      tone: {
+        info: "border-info/15 bg-info-soft text-info",
+        success: "border-success/20 bg-success-soft text-success",
+        warning: "border-warning/20 bg-warning-soft text-warning",
+        danger: "border-destructive/20 bg-destructive-soft text-destructive",
+      },
     },
+    defaultVariants: { tone: "info" },
   },
-  defaultVariants: { tone: "info" },
-});
+);
 
 const icons = { info: Info, success: CheckCircle2, warning: TriangleAlert, danger: AlertCircle };
 

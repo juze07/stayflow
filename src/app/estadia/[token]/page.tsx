@@ -58,11 +58,11 @@ async function StayInvitation({ params }: { params: Promise<{ token: string }> }
 
 export default function StayInvitationPage({ params }: PageProps<"/estadia/[token]">) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
-      <div className="mb-8">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4 py-10">
+      <div className="mb-10">
         <Logo />
       </div>
-      <main className="w-full max-w-sm">
+      <main className="w-full max-w-sm animate-fade-up">
         <Suspense fallback={<FormSkeleton fields={1} />}>
           <StayInvitation params={params} />
         </Suspense>

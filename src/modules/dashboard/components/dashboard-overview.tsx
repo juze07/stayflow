@@ -1,4 +1,13 @@
-import { AlertTriangle, Building2, CalendarCheck, CheckCircle2, Receipt, Wrench } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  Building2,
+  CalendarCheck,
+  CheckCircle2,
+  ChevronRight,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +36,7 @@ import {
 import { ExpenseSeriesChart, TaskSeriesChart } from "./charts";
 import { GettingStarted, type GettingStartedStep } from "./getting-started";
 import { PeriodSelect } from "./period-select";
-import { StatCard, StatCardSkeleton } from "./stat-card";
+import { StatCard, StatCardSkeleton, StatGroup } from "./stat-card";
 
 export async function DashboardOverview({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const [{ business, role, user }, params] = await Promise.all([requireBusiness(), searchParams]);
@@ -77,10 +86,10 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
   const showGettingStarted = canManage && steps.some((step) => !step.done);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {showGettingStarted && <GettingStarted steps={steps} />}
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <StatGroup>
         <StatCard
           label="Tarefas para hoje"
           value={overview.tasksToday}
@@ -96,7 +105,7 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
         />
         <StatCard label="Propriedades ativas" value={overview.activeProperties} icon={Building2} href="/propriedades" />
         <StatCard label="Problemas em aberto" value={overview.openIssues} icon={Wrench} href="/manutencao" />
-      </div>
+      </StatGroup>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <TaskPanel
@@ -105,7 +114,8 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
           tasks={attention}
           timeZone={tz}
           now={now}
-          empty="Nada atrasado nem urgente. 👍"
+          empty="Nada atrasado nem urgente."
+          emptyIcon={CheckCircle2}
           moreHref="/tarefas?estado=atrasadas"
           showDate
         />
@@ -116,29 +126,35 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
           timeZone={tz}
           now={now}
           empty="Sem tarefas marcadas para hoje."
+          emptyIcon={CalendarCheck}
           moreHref={canManage ? "/tarefas?vista=calendario" : "/tarefas?responsavel=eu"}
         />
       </div>
 
       <section className="space-y-4" aria-labelledby="periodo-titulo">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 id="periodo-titulo" className="text-lg font-semibold text-foreground">
-            {PERIOD_LABELS[period]}
-          </h2>
+          <div>
+            <h2 id="periodo-titulo" className="text-base font-semibold tracking-tight text-foreground">
+              {PERIOD_LABELS[period]}
+            </h2>
+            <p className="text-[13px] text-muted-foreground">
+              Evolução das tarefas{canManage ? " e das despesas" : ""}.
+            </p>
+          </div>
           <PeriodSelect value={period} />
-        </div>
-
-        <div className={canManage ? "grid gap-4 sm:grid-cols-3" : "grid gap-4 sm:grid-cols-2"}>
-          <StatCard label="Tarefas agendadas" value={scheduledInPeriod} icon={CalendarCheck} />
-          <StatCard label="Tarefas concluídas" value={completedInPeriod} icon={CheckCircle2} />
-          {canManage && <StatCard label="Despesas" value={formatCurrency(expensesTotal)} icon={Receipt} />}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className={canManage ? undefined : "lg:col-span-2"}>
-            <CardHeader>
-              <CardTitle>Tarefas por dia</CardTitle>
-              <CardDescription>Agendadas para o dia e concluídas nesse dia (exclui canceladas).</CardDescription>
+            <CardHeader className="space-y-4">
+              <div className="space-y-1">
+                <CardTitle>Tarefas por dia</CardTitle>
+                <CardDescription>Agendadas para o dia e concluídas nesse dia (exclui canceladas).</CardDescription>
+              </div>
+              <dl className="flex gap-8">
+                <Metric label="Tarefas agendadas" value={scheduledInPeriod} swatch="bg-chart-2" />
+                <Metric label="Tarefas concluídas" value={completedInPeriod} swatch="bg-chart-1" />
+              </dl>
             </CardHeader>
             <CardContent>
               {scheduledInPeriod + completedInPeriod === 0 ? (
@@ -158,13 +174,17 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
 
           {canManage && (
             <Card>
-              <CardHeader>
-                <CardTitle>Despesas por dia</CardTitle>
-                <CardDescription>
-                  <Link href="/despesas/relatorio" className="text-primary hover:underline">
-                    Ver relatório completo
-                  </Link>
-                </CardDescription>
+              <CardHeader className="space-y-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <CardTitle>Despesas por dia</CardTitle>
+                    <CardDescription>Pela data da despesa.</CardDescription>
+                  </div>
+                  <MoreLink href="/despesas/relatorio">Ver relatório completo</MoreLink>
+                </div>
+                <dl className="flex gap-8">
+                  <Metric label="Despesas" value={formatCurrency(expensesTotal)} />
+                </dl>
               </CardHeader>
               <CardContent>
                 {expensesTotal === 0 ? (
@@ -193,18 +213,26 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
           <CardHeader>
             <CardTitle>Concluídas recentemente</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-3">
             {completed.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Ainda não há tarefas concluídas.</p>
+              <PanelEmpty icon={CheckCircle2}>Ainda não há tarefas concluídas.</PanelEmpty>
             ) : (
-              <ul className="divide-y divide-border">
+              <ul className="-mx-2">
                 {completed.map((task) => (
                   <li key={task.id}>
-                    <Link href={`/tarefas/${task.id}`} className="-mx-2 block rounded-md px-2 py-2.5 hover:bg-muted">
-                      <p className="truncate text-sm font-medium text-foreground">{task.title}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {task.property?.name} · {formatDateTime(task.completedAt ?? task.scheduledAt, tz)}
-                      </p>
+                    <Link
+                      href={`/tarefas/${task.id}`}
+                      className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/60"
+                    >
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-success-soft text-success">
+                        <CheckCircle2 className="size-4" aria-hidden />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium text-foreground">{task.title}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {task.property?.name} · {formatDateTime(task.completedAt ?? task.scheduledAt, tz)}
+                        </span>
+                      </span>
                     </Link>
                   </li>
                 ))}
@@ -217,11 +245,11 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
           <CardHeader>
             <CardTitle>Atividade recente</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             {activity.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Ainda não há atividade registada.</p>
+              <PanelEmpty icon={Activity}>Ainda não há atividade registada.</PanelEmpty>
             ) : (
-              <ul className="space-y-3">
+              <ol className="relative space-y-4 before:absolute before:top-2 before:bottom-2 before:left-[5px] before:w-px before:bg-border">
                 {activity.map((item) => {
                   const href = activityHref(item);
                   const text = (
@@ -231,23 +259,64 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
                     </>
                   );
                   return (
-                    <li key={item.id} className="text-sm">
-                      {href ? (
-                        <Link href={href} className="text-muted-foreground hover:underline">
-                          {text}
-                        </Link>
-                      ) : (
-                        <span className="text-muted-foreground">{text}</span>
-                      )}
-                      <p className="text-xs text-muted-foreground">{formatDateTime(item.createdAt, tz)}</p>
+                    <li key={item.id} className="relative flex gap-3 text-sm">
+                      <span
+                        aria-hidden
+                        className="relative mt-1.5 size-[11px] shrink-0 rounded-full border-2 border-surface bg-border-strong"
+                      />
+                      <div className="min-w-0">
+                        {href ? (
+                          <Link href={href} className="text-muted-foreground hover:text-foreground">
+                            {text}
+                          </Link>
+                        ) : (
+                          <span className="text-muted-foreground">{text}</span>
+                        )}
+                        <p className="text-xs text-subtle-foreground tabular-nums">
+                          {formatDateTime(item.createdAt, tz)}
+                        </p>
+                      </div>
                     </li>
                   );
                 })}
-              </ul>
+              </ol>
             )}
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+}
+
+function Metric({ label, value, swatch }: { label: string; value: number | string; swatch?: string }) {
+  return (
+    <div>
+      <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        {swatch && <span aria-hidden className={`size-2 rounded-full ${swatch}`} />}
+        {label}
+      </dt>
+      <dd className="mt-0.5 text-xl font-semibold tracking-tight text-foreground tabular-nums">{value}</dd>
+    </div>
+  );
+}
+
+function MoreLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex shrink-0 items-center gap-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+    >
+      {children}
+      <ChevronRight className="size-3.5" aria-hidden />
+    </Link>
+  );
+}
+
+function PanelEmpty({ icon: Icon, children }: { icon: LucideIcon; children: ReactNode }) {
+  return (
+    <div className="flex flex-col items-center gap-2 py-8 text-center text-sm text-muted-foreground">
+      <Icon className="size-5 text-subtle-foreground" aria-hidden />
+      {children}
     </div>
   );
 }
@@ -259,11 +328,12 @@ type TaskPanelProps = {
   timeZone: string;
   now: Date;
   empty: string;
+  emptyIcon: LucideIcon;
   moreHref: string;
   showDate?: boolean;
 };
 
-function TaskPanel({ title, description, tasks, timeZone, now, empty, moreHref, showDate }: TaskPanelProps) {
+function TaskPanel({ title, description, tasks, timeZone, now, empty, emptyIcon, moreHref, showDate }: TaskPanelProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-3">
@@ -271,31 +341,31 @@ function TaskPanel({ title, description, tasks, timeZone, now, empty, moreHref, 
           <CardTitle>{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>
-        <Link href={moreHref} className="shrink-0 text-sm font-medium text-primary hover:underline">
-          Ver tarefas
-        </Link>
+        <MoreLink href={moreHref}>Ver tarefas</MoreLink>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-3">
         {tasks.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{empty}</p>
+          <PanelEmpty icon={emptyIcon}>{empty}</PanelEmpty>
         ) : (
-          <ul className="divide-y divide-border">
+          <ul className="-mx-2">
             {tasks.map((task) => (
               <li key={task.id}>
                 <Link
                   href={`/tarefas/${task.id}`}
-                  className="-mx-2 flex items-start gap-3 rounded-md px-2 py-2.5 hover:bg-muted"
+                  className="flex items-start gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-muted/60"
                 >
-                  <span className="w-14 shrink-0 text-sm tabular-nums text-muted-foreground">
+                  <span className="mt-px w-12 shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
                     {showDate
                       ? formatDateTime(task.scheduledAt, timeZone).slice(0, 5)
                       : formatTime(task.scheduledAt, timeZone)}
                   </span>
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <p className="truncate text-sm font-medium text-foreground">{task.title}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {task.property?.name} · {task.assignee?.name ?? "Sem responsável"}
-                    </p>
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div>
+                      <p className="truncate text-sm font-medium text-foreground">{task.title}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {task.property?.name} · {task.assignee?.name ?? "Sem responsável"}
+                      </p>
+                    </div>
                     <div className="flex flex-wrap gap-1">
                       <TaskStatusBadge status={task.status} />
                       {isOverdue(task, now) && <OverdueBadge />}
@@ -314,7 +384,7 @@ function TaskPanel({ title, description, tasks, timeZone, now, empty, moreHref, 
 
 function EmptyChart({ children }: { children: ReactNode }) {
   return (
-    <p className="flex h-40 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
+    <p className="flex h-48 items-center justify-center rounded-lg border border-dashed border-border-strong bg-surface-raised text-sm text-muted-foreground">
       {children}
     </p>
   );
@@ -324,7 +394,9 @@ function EmptyChart({ children }: { children: ReactNode }) {
 function DataTable({ caption, headers, rows }: { caption: string; headers: string[]; rows: (string | number)[][] }) {
   return (
     <details className="mt-3 text-sm">
-      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Ver dados em tabela</summary>
+      <summary className="cursor-pointer text-[13px] text-muted-foreground transition-colors hover:text-foreground">
+        Ver dados em tabela
+      </summary>
       <div className="mt-2 max-h-64 overflow-y-auto">
         <table className="w-full text-left tabular-nums">
           <caption className="sr-only">{caption}</caption>
@@ -356,24 +428,22 @@ function DataTable({ caption, headers, rows }: { caption: string; headers: strin
 
 export function DashboardOverviewSkeleton() {
   return (
-    <div className="space-y-6" role="status" aria-label="A carregar indicadores">
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="space-y-8" role="status" aria-label="A carregar indicadores">
+      <StatGroup>
         <StatCardSkeleton />
         <StatCardSkeleton />
         <StatCardSkeleton />
         <StatCardSkeleton />
-      </div>
+      </StatGroup>
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="space-y-3 p-6">
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-        </Card>
-        <Card className="space-y-3 p-6">
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-        </Card>
+        {[0, 1].map((key) => (
+          <Card key={key} className="space-y-4 p-5">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-11 w-full" />
+            <Skeleton className="h-11 w-full" />
+            <Skeleton className="h-11 w-3/4" />
+          </Card>
+        ))}
       </div>
     </div>
   );

@@ -72,7 +72,7 @@ export function TaskCalendar(props: TaskCalendarProps) {
       )}
 
       <Card className="hidden overflow-hidden md:block">
-        <div className="grid grid-cols-7 border-b border-border bg-muted/50 text-center text-xs font-medium text-muted-foreground">
+        <div className="grid grid-cols-7 border-b border-border bg-surface-raised text-center text-xs font-medium text-muted-foreground">
           {WEEKDAYS.map((weekday) => (
             <div key={weekday} className="py-2">
               {weekday}
@@ -90,7 +90,7 @@ export function TaskCalendar(props: TaskCalendarProps) {
                   "min-h-28 border-border p-1.5",
                   index % 7 !== 6 && "border-r",
                   index < days.length - 7 && "border-b",
-                  !day.inMonth && "bg-muted/40",
+                  !day.inMonth && "bg-surface-raised",
                 )}
               >
                 <p
@@ -160,7 +160,10 @@ export function TaskCalendar(props: TaskCalendarProps) {
               <ul className="divide-y divide-border">
                 {(byDay.get(day.date) ?? []).map((task) => (
                   <li key={task.id}>
-                    <Link href={`/tarefas/${task.id}`} className="flex items-start gap-3 px-4 py-3 hover:bg-muted/40">
+                    <Link
+                      href={`/tarefas/${task.id}`}
+                      className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/50"
+                    >
                       <span className="w-12 shrink-0 text-sm tabular-nums text-muted-foreground">
                         {formatTime(task.scheduledAt, timeZone)}
                       </span>

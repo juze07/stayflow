@@ -20,7 +20,7 @@ export async function AccountPanel() {
 
 export function AccountPanelSkeleton() {
   return (
-    <div className="flex items-center gap-3 p-2" role="status" aria-label="A carregar">
+    <div className="flex items-center gap-2.5 p-2" role="status" aria-label="A carregar">
       <Skeleton className="size-8 rounded-full" />
       <div className="flex-1 space-y-1.5">
         <Skeleton className="h-3.5 w-28" />

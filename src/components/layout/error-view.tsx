@@ -15,13 +15,13 @@ export function ErrorView({ error, retry }: ErrorViewProps) {
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-lg border border-border bg-surface px-6 py-12 text-center">
-      <div className="flex size-11 items-center justify-center rounded-full bg-destructive-soft text-destructive">
+    <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-surface px-6 py-14 text-center">
+      <div className="flex size-10 items-center justify-center rounded-lg bg-destructive-soft text-destructive ring-1 ring-destructive/15">
         <TriangleAlert className="size-5" aria-hidden />
       </div>
       <div className="space-y-1">
-        <h2 className="text-base font-semibold">Não foi possível carregar esta página</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-[15px] font-semibold tracking-tight">Não foi possível carregar esta página</h2>
+        <p className="max-w-md text-sm text-muted-foreground">
           Ocorreu um erro inesperado. Tente novamente; se o problema continuar, contacte o suporte
           {digest ? ` (referência ${digest})` : ""}.
         </p>

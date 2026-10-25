@@ -18,10 +18,10 @@ type SheetContentProps = ComponentProps<typeof Dialog.Content> & {
 export function SheetContent({ title, className, children, ...props }: SheetContentProps) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/40" />
+      <Dialog.Overlay className="fixed inset-0 z-50 animate-fade-in bg-foreground/30 backdrop-blur-[2px]" />
       <Dialog.Content
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col bg-surface shadow-xl focus:outline-none",
+          "fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] animate-slide-in-left flex-col border-r border-border bg-background shadow-overlay focus:outline-none",
           className,
         )}
         {...props}
@@ -30,7 +30,7 @@ export function SheetContent({ title, className, children, ...props }: SheetCont
         <Dialog.Description className="sr-only">{title}</Dialog.Description>
         {children}
         <Dialog.Close
-          className="absolute top-3 right-3 rounded-md p-2 text-muted-foreground hover:bg-muted"
+          className="absolute top-3 right-3 rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label="Fechar"
         >
           <X className="size-5" aria-hidden />

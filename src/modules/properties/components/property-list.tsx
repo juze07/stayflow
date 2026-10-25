@@ -40,34 +40,31 @@ export function PropertyList({ properties, empty }: PropertyListProps) {
 
   return (
     <Card className="overflow-hidden">
-      <table className="hidden w-full text-sm md:table">
-        <thead className="border-b border-border bg-muted/50 text-left text-xs font-medium text-muted-foreground">
+      <table className="data-table hidden md:table">
+        <thead>
           <tr>
-            <th scope="col" className="px-4 py-3 font-medium">
-              Propriedade
-            </th>
-            <th scope="col" className="px-4 py-3 font-medium">
-              Localidade
-            </th>
-            <th scope="col" className="px-4 py-3 font-medium">
-              Capacidade
-            </th>
+            <th scope="col">Propriedade</th>
+            <th scope="col">Localidade</th>
+            <th scope="col">Capacidade</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody>
           {properties.map((property) => (
-            <tr key={property.id} className="hover:bg-muted/40">
-              <td className="px-4 py-3">
-                <Link href={`/propriedades/${property.id}`} className="font-medium text-foreground hover:underline">
+            <tr key={property.id} className="relative">
+              <td>
+                <Link
+                  href={`/propriedades/${property.id}`}
+                  className="font-medium text-foreground underline-offset-4 after:absolute after:inset-0 hover:underline"
+                >
                   {property.name}
                 </Link>
                 {property.archivedAt && <Badge className="ml-2">Arquivada</Badge>}
                 <p className="text-xs text-muted-foreground">{property.addressLine}</p>
               </td>
-              <td className="px-4 py-3 text-muted-foreground">
+              <td className="text-muted-foreground">
                 {property.postalCode} {property.city}
               </td>
-              <td className="px-4 py-3">
+              <td>
                 <Capacity property={property} />
               </td>
             </tr>
@@ -78,7 +75,10 @@ export function PropertyList({ properties, empty }: PropertyListProps) {
       <ul className="divide-y divide-border md:hidden">
         {properties.map((property) => (
           <li key={property.id}>
-            <Link href={`/propriedades/${property.id}`} className="block space-y-1 px-4 py-3 hover:bg-muted/40">
+            <Link
+              href={`/propriedades/${property.id}`}
+              className="block space-y-1 px-4 py-3.5 transition-colors hover:bg-muted/50"
+            >
               <p className="font-medium text-foreground">
                 {property.name}
                 {property.archivedAt && <Badge className="ml-2">Arquivada</Badge>}

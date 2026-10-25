@@ -31,7 +31,7 @@ export function IssueList({ issues, timeZone, hideProperty, empty }: IssueListPr
             <Link
               href={`/manutencao/${issue.id}`}
               className={cn(
-                "flex flex-col gap-1.5 px-4 py-3 hover:bg-muted/40 sm:flex-row sm:items-center sm:gap-4",
+                "flex flex-col gap-1.5 px-4 py-3 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:gap-4",
                 issue.priority === "urgent" &&
                   issue.status !== "resolved" &&
                   issue.status !== "cancelled" &&

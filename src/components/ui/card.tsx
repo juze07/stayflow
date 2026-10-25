@@ -2,15 +2,15 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("rounded-lg border border-border bg-surface shadow-card", className)} {...props} />;
+  return <div className={cn("rounded-xl border border-border bg-surface shadow-card", className)} {...props} />;
 }
 
 export function CardHeader({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("space-y-1 p-5 pb-0 sm:p-6 sm:pb-0", className)} {...props} />;
+  return <div className={cn("space-y-1 p-5 pb-0", className)} {...props} />;
 }
 
 export function CardTitle({ className, ...props }: ComponentProps<"h2">) {
-  return <h2 className={cn("text-base font-semibold text-foreground", className)} {...props} />;
+  return <h2 className={cn("text-[15px] font-semibold tracking-tight text-foreground", className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: ComponentProps<"p">) {
@@ -18,13 +18,16 @@ export function CardDescription({ className, ...props }: ComponentProps<"p">) {
 }
 
 export function CardContent({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("p-5 sm:p-6", className)} {...props} />;
+  return <div className={cn("p-5", className)} {...props} />;
 }
 
 export function CardFooter({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
-      className={cn("flex items-center justify-end gap-3 border-t border-border px-5 py-4 sm:px-6", className)}
+      className={cn(
+        "flex items-center justify-end gap-3 rounded-b-xl border-t border-border bg-surface-raised px-5 py-3.5",
+        className,
+      )}
       {...props}
     />
   );

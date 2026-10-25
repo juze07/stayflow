@@ -59,7 +59,7 @@ export function TaskChecklist({ items, editable, timeZone }: TaskChecklistProps)
             <label
               className={cn(
                 "flex items-start gap-3 px-3 py-3",
-                editable ? "cursor-pointer hover:bg-muted/40" : "cursor-default",
+                editable ? "cursor-pointer transition-colors hover:bg-muted/50" : "cursor-default",
               )}
             >
               <input

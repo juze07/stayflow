@@ -24,7 +24,7 @@ export function FormField({ label, error, hint, optional, className, children }:
     <div className={cn("space-y-1.5", className)}>
       <Label htmlFor={fieldId}>
         {label}
-        {optional && <span className="ml-1 font-normal text-muted-foreground">(opcional)</span>}
+        {optional && <span className="ml-1 font-normal text-subtle-foreground">(opcional)</span>}
       </Label>
       {cloneElement(children, {
         id: fieldId,
@@ -32,11 +32,11 @@ export function FormField({ label, error, hint, optional, className, children }:
         "aria-describedby": hasMessage ? messageId : undefined,
       })}
       {error ? (
-        <p id={messageId} className="text-sm text-destructive">
+        <p id={messageId} className="text-[13px] text-destructive">
           {error}
         </p>
       ) : hint ? (
-        <p id={messageId} className="text-sm text-muted-foreground">
+        <p id={messageId} className="text-[13px] text-muted-foreground">
           {hint}
         </p>
       ) : null}
