@@ -1,4 +1,4 @@
-import { CreditCard, Landmark } from "lucide-react";
+import { CreditCard, Landmark } from "@/components/ui/icons";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
