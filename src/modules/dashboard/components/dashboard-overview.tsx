@@ -6,8 +6,8 @@ import {
   CheckCircle2,
   ChevronRight,
   Wrench,
-  type LucideIcon,
-} from "lucide-react";
+  type IconComponent,
+} from "@/components/ui/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -134,7 +134,7 @@ export async function DashboardOverview({ searchParams }: { searchParams: Promis
       <section className="space-y-4" aria-labelledby="periodo-titulo">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 id="periodo-titulo" className="text-base font-semibold tracking-tight text-foreground">
+            <h2 id="periodo-titulo" className="font-display text-2xl leading-tight text-foreground">
               {PERIOD_LABELS[period]}
             </h2>
             <p className="text-[13px] text-muted-foreground">
@@ -312,7 +312,7 @@ function MoreLink({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-function PanelEmpty({ icon: Icon, children }: { icon: LucideIcon; children: ReactNode }) {
+function PanelEmpty({ icon: Icon, children }: { icon: IconComponent; children: ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-2 py-8 text-center text-sm text-muted-foreground">
       <Icon className="size-5 text-subtle-foreground" aria-hidden />
@@ -328,7 +328,7 @@ type TaskPanelProps = {
   timeZone: string;
   now: Date;
   empty: string;
-  emptyIcon: LucideIcon;
+  emptyIcon: IconComponent;
   moreHref: string;
   showDate?: boolean;
 };

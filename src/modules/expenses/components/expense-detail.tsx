@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, CalendarDays, Pencil, Store, Tag, Wrench } from "lucide-react";
+import { ArrowLeft, Building2, CalendarDays, Pencil, Store, Tag, Wrench } from "@/components/ui/icons";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export async function ExpenseDetailView({ params }: { params: Promise<{ id: stri
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">{EXPENSE_CATEGORY_LABELS[expense.category]}</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{expense.description}</h1>
+          <h1 className="font-display text-[32px] leading-tight text-foreground sm:text-4xl">{expense.description}</h1>
           <p className="text-3xl font-semibold tabular-nums text-foreground">{formatCurrency(expense.amountCents)}</p>
         </div>
         <div className="flex flex-wrap gap-2">

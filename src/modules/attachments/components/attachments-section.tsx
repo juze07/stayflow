@@ -1,4 +1,4 @@
-import { FileText, ImageIcon } from "lucide-react";
+import { FileText, ImageIcon } from "@/components/ui/icons";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateTime } from "@/lib/format";
 import { MAX_ATTACHMENTS_PER_ITEM, isPreviewableImage, type AttachmentParent } from "../constants";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog } from "radix-ui";
-import { X } from "lucide-react";
+import { X } from "@/components/ui/icons";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 

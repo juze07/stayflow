@@ -7,7 +7,7 @@ Portugal. Leia também `AGENTS.md` (regras do Next.js 16) e `README.md` (setup e
 
 Next.js 16 (App Router, Cache Components, `src/proxy.ts` em vez de middleware) · React 19 · TypeScript estrito ·
 Tailwind 4 (tokens em `src/app/globals.css`) · Supabase (Postgres, Auth, Storage) via `@supabase/ssr` · React Hook
-Form + Zod 4 · Radix UI (pacote `radix-ui`) · Lucide · Recharts · Vitest · pgTAP.
+Form + Zod 4 · Radix UI (pacote `radix-ui`) · Phosphor (via `components/ui/icons`) · Recharts · Vitest · pgTAP.
 
 ## Estrutura
 

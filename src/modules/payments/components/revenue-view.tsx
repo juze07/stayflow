@@ -1,4 +1,4 @@
-import { AlertTriangle, Receipt, TrendingUp, Wallet } from "lucide-react";
+import { AlertTriangle, Receipt, TrendingUp, Wallet } from "@/components/ui/icons";
 import Link from "next/link";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { Button } from "@/components/ui/button";

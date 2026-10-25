@@ -1,4 +1,4 @@
-import { Landmark } from "lucide-react";
+import { Landmark } from "@/components/ui/icons";
 import { CopyButton } from "@/components/ui/copy-button";
 import type { TenantPaymentOptions } from "../queries";
 import { formatIban } from "../schemas";

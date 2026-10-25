@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Paperclip } from "lucide-react";
+import { Camera, Paperclip } from "@/components/ui/icons";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";

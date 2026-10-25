@@ -9,13 +9,13 @@ import {
   Sparkles,
   Wallet,
   Wrench,
-  type LucideIcon,
-} from "lucide-react";
+  type IconComponent,
+} from "@/components/ui/icons";
 
 export type NavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   /** Secções ainda por implementar aparecem marcadas na navegação. */
   available: boolean;
 };

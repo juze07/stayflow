@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MoreHorizontal } from "lucide-react";
+import { Check, MoreHorizontal } from "@/components/ui/icons";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";

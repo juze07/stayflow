@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronsUpDown, LogOut, UserRound } from "lucide-react";
+import { Check, ChevronsUpDown, LogOut, UserRound } from "@/components/ui/icons";
 import Link from "next/link";
 import { useTransition } from "react";
 import { Avatar } from "@/components/ui/avatar";

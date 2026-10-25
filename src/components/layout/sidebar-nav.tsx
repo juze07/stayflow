@@ -67,8 +67,9 @@ function NavLink({ item, active, onNavigate }: { item: NavItem; active: boolean;
       )}
     >
       <Icon
+        weight={active ? "duotone" : "regular"}
         className={cn(
-          "size-4 shrink-0 transition-colors",
+          "size-[18px] shrink-0 transition-colors",
           active ? "text-primary" : "text-subtle-foreground group-hover:text-muted-foreground",
         )}
         aria-hidden

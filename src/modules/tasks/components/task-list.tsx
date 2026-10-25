@@ -1,4 +1,4 @@
-import { ListTodo } from "lucide-react";
+import { ListTodo } from "@/components/ui/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";

@@ -1,4 +1,4 @@
-import { Bath, BedDouble, Building2, Users } from "lucide-react";
+import { Bath, BedDouble, Building2, Users } from "@/components/ui/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";

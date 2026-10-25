@@ -1,4 +1,4 @@
-import { ArrowLeft, Bath, BedDouble, MapPin, Pencil, Plus, Users } from "lucide-react";
+import { ArrowLeft, Bath, BedDouble, MapPin, Pencil, Plus, Users } from "@/components/ui/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Alert } from "@/components/ui/alert";
@@ -50,7 +50,7 @@ export async function PropertyDetailView({ params }: { params: Promise<{ id: str
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="font-display text-[32px] leading-tight text-foreground sm:text-4xl">
             {property.name}
             {archived && <Badge className="ml-2 align-middle">Arquivada</Badge>}
           </h1>

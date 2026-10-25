@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, CalendarClock, Clock, Pencil, User, Wrench } from "lucide-react";
+import { ArrowLeft, Building2, CalendarClock, Clock, Pencil, User, Wrench } from "@/components/ui/icons";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +54,7 @@ export async function TaskDetailView({ params }: { params: Promise<{ id: string 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">{TASK_TYPE_LABELS[task.type]}</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{task.title}</h1>
+          <h1 className="font-display text-[32px] leading-tight text-foreground sm:text-4xl">{task.title}</h1>
           <div className="flex flex-wrap gap-1">
             <TaskStatusBadge status={task.status} />
             {overdue && <OverdueBadge />}

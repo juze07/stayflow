@@ -7,16 +7,25 @@ type AuthCardProps = {
   children: ReactNode;
 };
 
-/** Título, formulário e rodapé dos ecrãs de autenticação (sem moldura, ao estilo das apps de produtividade). */
+/** Título, formulário e rodapé dos ecrãs de autenticação, com entrada escalonada. */
 export function AuthCard({ title, description, footer, children }: AuthCardProps) {
   return (
     <div className="space-y-7">
-      <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+      <div className="animate-rise space-y-2" style={{ animationDelay: "60ms" }}>
+        <h1 className="font-display text-4xl leading-tight text-foreground">{title}</h1>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
-      {children}
-      {footer && <p className="border-t border-border pt-5 text-sm text-muted-foreground">{footer}</p>}
+      <div className="animate-rise" style={{ animationDelay: "160ms" }}>
+        {children}
+      </div>
+      {footer && (
+        <p
+          className="animate-rise border-t border-border pt-5 text-sm text-muted-foreground"
+          style={{ animationDelay: "260ms" }}
+        >
+          {footer}
+        </p>
+      )}
     </div>
   );
 }
