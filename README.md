@@ -113,3 +113,5 @@ automáticas, URLs de autenticação, emails em português, SMTP, publicação n
 
 Nunca coloque a chave `service_role`/`sb_secret_` nem a palavra-passe da base de dados no código, no chat ou em
 variáveis `NEXT_PUBLIC_*`.
+
+Pagamentos online (Stripe Connect, cartão e IBAN por inquilino): ver [`docs/STRIPE.md`](docs/STRIPE.md).

@@ -12,19 +12,23 @@ import { requestTime } from "@/lib/now";
 import { requireSession } from "@/modules/business/queries";
 import { ISSUE_STATUS_LABELS, ISSUE_STATUS_TONES } from "@/modules/maintenance/constants";
 import { PaymentStatusBadge } from "@/modules/payments/components/payment-badges";
+import { StripeActionButton } from "@/modules/stripe/components/stripe-action-button";
+import { TenantBankTransfer } from "@/modules/stripe/components/tenant-bank-transfer";
+import { getMyPaymentOptions, type TenantPaymentOptions } from "@/modules/stripe/queries";
 import { getMyIssues, getMyPayments, getMyPendingStayInvitations, getMyStays, type TenantStay } from "../queries";
 import { AcceptStayInvitationButton } from "./accept-stay-invitation-button";
 import { ReportIssueForm } from "./report-issue-form";
 import { ReportPaymentButton } from "./report-payment-button";
 import type { TenantIssue, TenantPayment } from "../queries";
 
-export async function TenantPortal() {
+export async function TenantPortal({ paymentDone = false }: { paymentDone?: boolean }) {
   const session = await requireSession();
-  const [stays, payments, issues, invitations] = await Promise.all([
+  const [stays, payments, issues, invitations, paymentOptions] = await Promise.all([
     getMyStays(),
     getMyPayments(),
     getMyIssues(),
     getMyPendingStayInvitations(),
+    getMyPaymentOptions(),
   ]);
 
   return (
@@ -35,6 +39,8 @@ export async function TenantPortal() {
         </h1>
         <p className="text-sm text-muted-foreground">A sua estadia, pagamentos e pedidos de reparação.</p>
       </div>
+
+      {paymentDone && <Alert tone="success">Pagamento concluído. Fica marcado como pago dentro de momentos.</Alert>}
 
       {invitations.map((invitation) => (
         <Card key={invitation.token} className="border-primary/25 bg-primary-soft/40">
@@ -69,6 +75,7 @@ export async function TenantPortal() {
           today={zonedToday(stay.businessTimezone, requestTime())}
           payments={payments.filter((p) => p.stayId === stay.id)}
           issues={issues.filter((i) => i.stayId === stay.id)}
+          paymentOptions={paymentOptions.find((o) => o.stayId === stay.id)}
         />
       ))}
     </div>
@@ -80,12 +87,15 @@ function StayCard({
   today,
   payments,
   issues,
+  paymentOptions,
 }: {
   stay: TenantStay;
   today: string;
   payments: TenantPayment[];
   issues: TenantIssue[];
+  paymentOptions?: TenantPaymentOptions;
 }) {
+  const online = paymentOptions?.onlinePayments ? paymentOptions : null;
   const due = payments.filter((p) => p.status === "pending");
   const dueCents = due.reduce((sum, p) => sum + p.amountCents, 0);
   const tz = stay.businessTimezone;
@@ -176,17 +186,15 @@ function StayCard({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {due.length > 0 && (
+          {online && (due.length > 0 || online.iban) && <TenantBankTransfer option={online} />}
+          {due.length > 0 && !online && (
             <Alert tone="info">
               {stay.paymentInstructions ? (
                 <span className="whitespace-pre-line">{stay.paymentInstructions}</span>
               ) : (
                 "Contacte a empresa para saber como pagar."
               )}
-              <span className="mt-1 block text-xs">
-                Depois de pagar, carregue em &quot;Já paguei&quot;. O pagamento por cartão na aplicação ainda não está
-                disponível.
-              </span>
+              <span className="mt-1 block text-xs">Depois de pagar, carregue em &quot;Já paguei&quot;.</span>
             </Alert>
           )}
           {payments.length === 0 ? (
@@ -218,7 +226,12 @@ function StayCard({
                     <span className="text-sm font-semibold tabular-nums text-foreground">
                       {formatCurrency(payment.amountCents)}
                     </span>
-                    {payment.status === "pending" && !payment.reportedAt && (
+                    {payment.status === "pending" && online && (
+                      <StripeActionButton action="card" id={payment.id}>
+                        Pagar com cartão
+                      </StripeActionButton>
+                    )}
+                    {payment.status === "pending" && !payment.reportedAt && !online && (
                       <ReportPaymentButton paymentId={payment.id} />
                     )}
                   </div>
