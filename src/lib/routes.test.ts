@@ -8,8 +8,10 @@ describe("rotas", () => {
     expect(isAuthRoute("/dashboard")).toBe(false);
   });
 
-  it("só deixa públicas as páginas de autenticação e a confirmação de email", () => {
+  it("só deixa públicas as páginas de autenticação, a confirmação de email e o webhook da Stripe", () => {
     expect(isPublicRoute("/auth/confirm")).toBe(true);
+    expect(isPublicRoute("/api/stripe/webhook")).toBe(true);
+    expect(isPublicRoute("/api/outra")).toBe(false);
     expect(isPublicRoute("/redefinir-palavra-passe")).toBe(false);
     expect(isPublicRoute("/convite/123")).toBe(false);
     expect(isPublicRoute("/definicoes")).toBe(false);

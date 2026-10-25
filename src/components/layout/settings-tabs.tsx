@@ -10,6 +10,7 @@ const TABS = [
   { href: "/definicoes", label: "Perfil" },
   { href: "/definicoes/empresa", label: "Empresa" },
   { href: "/definicoes/equipa", label: "Equipa" },
+  { href: "/definicoes/pagamentos", label: "Pagamentos online" },
   { href: "/definicoes/listas", label: "Listas de verificação" },
 ] as const;
 
