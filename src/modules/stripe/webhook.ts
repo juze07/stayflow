@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 import type { StripeDb } from "./db";
 import { accountIdSchema, customerIdSchema, paymentMetadataSchema } from "./schemas";
-import { applyCashBalance, paymentIntentMethod } from "./service";
+import { applyCashBalance, paymentIntentMethod, syncAccountStatus } from "./service";
 
 /** Eventos que o endpoint do webhook tem de receber (contas ligadas). */
 export const HANDLED_EVENTS = ["account.updated", "payment_intent.succeeded", "cash_balance.funds_available"] as const;
@@ -20,8 +20,8 @@ export async function handleStripeEvent(event: Stripe.Event, deps: { stripe: Str
   if (account.success) {
     switch (event.type) {
       case "account.updated": {
-        const object = event.data.object;
-        await db.updateAccount(object.id, object.charges_enabled, object.details_submitted);
+        // Contas v2: o estado vem sempre da Stripe, não do conteúdo do evento.
+        await syncAccountStatus(stripe, db, account.data);
         outcome = "account_updated";
         break;
       }

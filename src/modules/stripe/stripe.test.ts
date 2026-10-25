@@ -100,12 +100,15 @@ describe("webhook", () => {
     expect(db.recordEvent).not.toHaveBeenCalled();
   });
 
-  it("atualiza o estado da conta ligada", async () => {
+  it("atualiza o estado da conta ligada a partir da Stripe (Accounts v2)", async () => {
     const db = fakeDb();
-    await handleStripeEvent(
-      event("account.updated", { id: "acct_Empresa1", charges_enabled: true, details_submitted: true }),
-      { stripe, db },
-    );
+    const retrieve = vi.fn(async () => ({
+      configuration: { merchant: { capabilities: { card_payments: { status: "active" } } } },
+      requirements: { entries: [] },
+    }));
+    const v2Stripe = { v2: { core: { accounts: { retrieve } } } } as unknown as Stripe;
+    await handleStripeEvent(event("account.updated", { id: "acct_Empresa1" }), { stripe: v2Stripe, db });
+    expect(retrieve).toHaveBeenCalledWith("acct_Empresa1", { include: ["configuration.merchant", "requirements"] });
     expect(db.updateAccount).toHaveBeenCalledWith("acct_Empresa1", true, true);
     expect(db.recordEvent).toHaveBeenCalledWith("evt_1", "account.updated");
   });
@@ -161,15 +164,12 @@ describe("webhook", () => {
 
   it("não regista o evento se o processamento falhar (a Stripe volta a enviar)", async () => {
     const db = fakeDb({ updateAccount: vi.fn(async () => Promise.reject(new Error("db"))) });
+    const retrieve = vi.fn(async () => ({ requirements: { entries: [{}] } }));
+    const v2Stripe = { v2: { core: { accounts: { retrieve } } } } as unknown as Stripe;
     await expect(
-      handleStripeEvent(
-        event("account.updated", { id: "acct_Empresa1", charges_enabled: true, details_submitted: true }),
-        {
-          stripe,
-          db,
-        },
-      ),
+      handleStripeEvent(event("account.updated", { id: "acct_Empresa1" }), { stripe: v2Stripe, db }),
     ).rejects.toThrow("db");
+    expect(db.updateAccount).toHaveBeenCalledWith("acct_Empresa1", false, false);
     expect(db.recordEvent).not.toHaveBeenCalled();
   });
 });

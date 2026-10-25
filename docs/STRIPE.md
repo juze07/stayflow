@@ -7,6 +7,7 @@ conta da empresa; a plataforma nunca o recebe.
 - **Transferência**: cada estadia recebe um IBAN virtual só seu (Stripe "Bank transfers", IBAN de NL; a Stripe não
   emite IBAN de PT). Quando chega dinheiro, a Stripe envia `cash_balance.funds_available` e a app aplica o saldo aos
   pagamentos por receber da estadia, do mais antigo para o mais recente. O pagamento fica "Recebido" sem intervenção.
+- O estado da conta ligada (Accounts v2) é lido da Stripe ao regressar da verificação, com o botão "Atualizar estado" e quando chega `account.updated`.
 - Em modo de teste os IBAN são inválidos e podem repetir-se; os IBAN reais só existem depois da verificação da empresa.
 
 ## Configuração (uma vez por ambiente)
