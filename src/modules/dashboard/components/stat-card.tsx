@@ -1,4 +1,4 @@
-import { ArrowUpRight, type LucideIcon } from "lucide-react";
+import { ArrowUpRight, type IconComponent } from "@/components/ui/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type StatCardProps = {
   label: string;
   value: number | string;
-  icon: LucideIcon;
+  icon: IconComponent;
   hint?: string;
   /** "danger" destaca o valor quando pede atenção (ex.: tarefas atrasadas). */
   tone?: "danger";
@@ -35,12 +35,18 @@ export function StatCard({ label, value, icon: Icon, hint, tone, href }: StatCar
   const danger = tone === "danger";
   const content = (
     <>
-      <div className="flex items-start gap-2">
-        <Icon
-          className={cn("mt-px size-4 shrink-0", danger ? "text-destructive" : "text-subtle-foreground")}
-          aria-hidden
-        />
-        <p className="min-w-0 flex-1 text-[13px] leading-snug font-medium text-muted-foreground">{label}</p>
+      <div className="flex items-start gap-2.5">
+        <span
+          className={cn(
+            "flex size-7 shrink-0 items-center justify-center rounded-lg ring-1 ring-inset",
+            danger
+              ? "bg-destructive-soft text-destructive ring-destructive/15"
+              : "bg-primary-soft text-primary ring-primary/10",
+          )}
+        >
+          <Icon className="size-4" weight="duotone" aria-hidden />
+        </span>
+        <p className="min-w-0 flex-1 pt-1 text-[13px] leading-snug font-medium text-muted-foreground">{label}</p>
         {href && (
           <ArrowUpRight
             className="size-4 shrink-0 text-subtle-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
@@ -50,7 +56,7 @@ export function StatCard({ label, value, icon: Icon, hint, tone, href }: StatCar
       </div>
       <p
         className={cn(
-          "mt-3 text-2xl font-semibold tracking-tight tabular-nums sm:text-[28px] sm:leading-9",
+          "mt-4 text-2xl font-semibold tracking-tight tabular-nums sm:text-[30px] sm:leading-9",
           danger ? "text-destructive" : "text-foreground",
         )}
       >

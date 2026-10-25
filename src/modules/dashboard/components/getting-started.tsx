@@ -1,4 +1,4 @@
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check } from "@/components/ui/icons";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -51,7 +51,7 @@ export function GettingStarted({ steps }: { steps: GettingStartedStep[] }) {
                 )}
                 aria-hidden
               >
-                {step.done ? <Check className="size-3.5" strokeWidth={3} /> : index + 1}
+                {step.done ? <Check className="size-3.5" /> : index + 1}
               </span>
               <div className="min-w-0 flex-1">
                 <p

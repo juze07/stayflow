@@ -1,4 +1,4 @@
-import { BarChart3, Plus } from "lucide-react";
+import { BarChart3, Plus } from "@/components/ui/icons";
 import Link from "next/link";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { Button } from "@/components/ui/button";

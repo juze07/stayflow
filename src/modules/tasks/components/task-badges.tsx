@@ -1,4 +1,4 @@
-import { AlertTriangle, Flame } from "lucide-react";
+import { AlertTriangle, Flame } from "@/components/ui/icons";
 import { Badge } from "@/components/ui/badge";
 import {
   INSPECTION_RESULT_LABELS,

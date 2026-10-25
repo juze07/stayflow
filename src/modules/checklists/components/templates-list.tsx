@@ -1,4 +1,4 @@
-import { ClipboardList, Plus } from "lucide-react";
+import { ClipboardList, Plus } from "@/components/ui/icons";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

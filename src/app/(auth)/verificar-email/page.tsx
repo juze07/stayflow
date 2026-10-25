@@ -1,4 +1,4 @@
-import { MailCheck } from "lucide-react";
+import { MailCheck } from "@/components/ui/icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthCard } from "@/components/layout/auth-card";

@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, CalendarClock, ClipboardCheck, Pencil, Plus, Tag, User } from "lucide-react";
+import { ArrowLeft, Building2, CalendarClock, ClipboardCheck, Pencil, Plus, Tag, User } from "@/components/ui/icons";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ export async function IssueDetailView({ params }: { params: Promise<{ id: string
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">{ISSUE_CATEGORY_LABELS[issue.category]}</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{issue.title}</h1>
+          <h1 className="font-display text-[32px] leading-tight text-foreground sm:text-4xl">{issue.title}</h1>
           <div className="flex flex-wrap gap-1">
             <IssueStatusBadge status={issue.status} />
             <TaskPriorityBadge priority={issue.priority} />

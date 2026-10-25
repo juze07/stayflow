@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/ui/icons";
 import Link from "next/link";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { Button } from "@/components/ui/button";

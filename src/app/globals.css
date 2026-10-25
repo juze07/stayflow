@@ -12,58 +12,70 @@
 @theme {
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
 
-  --color-background: #f7f7f8;
+  /* Neutros quentes (cal e linho) e tinta azul-noite, como um azulejo antigo. */
+  --color-background: #f5f3ee;
   --color-surface: #ffffff;
-  --color-surface-raised: #fcfcfd;
-  --color-foreground: #131316;
-  --color-muted: #f2f2f4;
-  --color-muted-foreground: #6b6b76;
-  --color-subtle-foreground: #9a9aa5;
-  --color-border: #e6e6ea;
-  --color-border-strong: #d6d6dc;
-  --color-input: #d9d9df;
-  --color-ring: #13795f;
+  --color-surface-raised: #fbfaf7;
+  --color-foreground: #101a2c;
+  --color-muted: #efece5;
+  --color-muted-foreground: #66625a;
+  --color-subtle-foreground: #9a9488;
+  --color-border: #e6e1d7;
+  --color-border-strong: #d6cfc1;
+  --color-input: #d9d3c6;
+  --color-ring: #2348b3;
 
-  --color-primary: #13795f;
-  --color-primary-hover: #0f6650;
+  /* Azul cobalto do azulejo: a cor da marca. */
+  --color-primary: #2348b3;
+  --color-primary-hover: #1c3a95;
   --color-primary-foreground: #ffffff;
-  --color-primary-soft: #eef7f3;
+  --color-primary-soft: #edf1fb;
 
-  /* Tinta: botões neutros fortes e o painel da marca. */
-  --color-ink: #131316;
-  --color-ink-hover: #2a2a31;
-  --color-ink-foreground: #fafafa;
+  /* Ocre: apontamentos (símbolo, segunda série dos gráficos). */
+  --color-accent: #c8793f;
+  --color-accent-soft: #fbf1e8;
 
-  --color-destructive: #d92d20;
-  --color-destructive-hover: #b42318;
-  --color-destructive-soft: #fef3f2;
-  --color-warning: #b54708;
-  --color-warning-soft: #fffaeb;
-  --color-success: #067647;
-  --color-success-soft: #ecfdf3;
-  --color-info: #175cd3;
-  --color-info-soft: #eff8ff;
+  /* Tinta: superfícies escuras (painel do login). */
+  --color-ink: #0f1a33;
+  --color-ink-hover: #1a2747;
+  --color-ink-foreground: #f6f4ef;
+
+  --color-destructive: #c8341f;
+  --color-destructive-hover: #a82a18;
+  --color-destructive-soft: #fdf2ef;
+  --color-warning: #a65a07;
+  --color-warning-soft: #fdf6e7;
+  --color-success: #19764a;
+  --color-success-soft: #edf8f1;
+  --color-info: #2348b3;
+  --color-info-soft: #edf1fb;
 
   /* Séries dos gráficos (validadas para daltonismo e contraste). */
-  --color-chart-1: #13795f;
-  --color-chart-2: #94a3b8;
+  --color-chart-1: #2348b3;
+  --color-chart-2: #d9a066;
 
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.625rem;
   --radius-xl: 0.875rem;
 
-  --shadow-xs: 0 1px 2px 0 rgb(19 19 22 / 0.05);
-  --shadow-card: 0 1px 2px 0 rgb(19 19 22 / 0.04);
-  --shadow-raised: 0 1px 3px 0 rgb(19 19 22 / 0.06), 0 1px 2px -1px rgb(19 19 22 / 0.06);
-  --shadow-overlay: 0 12px 32px -8px rgb(19 19 22 / 0.18), 0 2px 6px -2px rgb(19 19 22 / 0.08);
-  --shadow-button: inset 0 1px 0 0 rgb(255 255 255 / 0.12), 0 1px 2px 0 rgb(19 19 22 / 0.12);
+  --shadow-xs: 0 1px 2px 0 rgb(16 26 44 / 0.05);
+  --shadow-card: 0 1px 2px 0 rgb(16 26 44 / 0.04), 0 0 0 1px rgb(16 26 44 / 0.01);
+  --shadow-raised: 0 1px 3px 0 rgb(16 26 44 / 0.07), 0 1px 2px -1px rgb(16 26 44 / 0.06);
+  --shadow-overlay: 0 16px 40px -12px rgb(16 26 44 / 0.22), 0 2px 6px -2px rgb(16 26 44 / 0.08);
+  --shadow-button:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.16), 0 1px 2px 0 rgb(16 26 44 / 0.16), 0 0 0 1px rgb(16 26 44 / 0.06);
 
   --animate-fade-in: fade-in 160ms ease-out;
   --animate-fade-up: fade-up 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
   --animate-slide-in-left: slide-in-left 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
   --animate-scale-in: scale-in 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-rise: rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-tile-in: tile-in 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-tile-glow: tile-glow 9s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
 
   @keyframes fade-in {
     from {
@@ -79,6 +91,37 @@
   @keyframes slide-in-left {
     from {
       transform: translateX(-100%);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+      filter: blur(4px);
+    }
+  }
+  @keyframes tile-in {
+    from {
+      opacity: 0;
+      transform: scale(0.6) rotate(-45deg);
+    }
+  }
+  @keyframes tile-glow {
+    0%,
+    100% {
+      opacity: 0.12;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
     }
   }
   @keyframes scale-in {
@@ -104,6 +147,12 @@
   h2,
   h3 {
     text-wrap: balance;
+  }
+
+  /* Títulos de página com serifa: dá carácter sem pesar na leitura. */
+  .font-display {
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
 
   *,

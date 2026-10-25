@@ -1,4 +1,4 @@
-import { Wallet } from "lucide-react";
+import { Wallet } from "@/components/ui/icons";
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";

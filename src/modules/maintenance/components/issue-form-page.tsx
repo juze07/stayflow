@@ -1,4 +1,4 @@
-import { Building2 } from "lucide-react";
+import { Building2 } from "@/components/ui/icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarRange, Receipt, Tag } from "lucide-react";
+import { ArrowLeft, CalendarRange, Receipt, Tag } from "@/components/ui/icons";
 import Link from "next/link";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

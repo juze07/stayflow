@@ -1,4 +1,4 @@
-import { Paperclip, Receipt } from "lucide-react";
+import { Paperclip, Receipt } from "@/components/ui/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";

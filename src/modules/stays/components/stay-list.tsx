@@ -1,4 +1,4 @@
-import { CalendarDays, Link2 } from "lucide-react";
+import { CalendarDays, Link2 } from "@/components/ui/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";

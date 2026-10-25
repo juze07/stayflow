@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Trash2, XCircle } from "lucide-react";
+import { RotateCcw, Trash2, XCircle } from "@/components/ui/icons";
 import { useState } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

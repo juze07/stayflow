@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { Check } from "@/components/ui/icons";
 import { useOptimistic, useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";
 import { formatDateTime } from "@/lib/format";

@@ -1,4 +1,4 @@
-import { CalendarDays, List, Plus } from "lucide-react";
+import { CalendarDays, List, Plus } from "@/components/ui/icons";
 import Link from "next/link";
 import { FilterBar, type FilterField } from "@/components/filters/filter-bar";
 import { Button } from "@/components/ui/button";

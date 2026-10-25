@@ -1,9 +1,10 @@
-import { CalendarDays, KeyRound, Mail, MapPin, Phone, Wallet, Wrench } from "lucide-react";
+import { CalendarDays, KeyRound, Mail, MapPin, Phone, Wallet, Wrench } from "@/components/ui/icons";
 import Link from "next/link";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AzulejoPattern } from "@/components/layout/azulejo-pattern";
 import { EmptyState } from "@/components/ui/empty-state";
 import { zonedToday } from "@/lib/dates";
 import { firstName, formatCurrency, formatDate } from "@/lib/format";
@@ -29,7 +30,7 @@ export async function TenantPortal() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+        <h1 className="font-display text-[32px] leading-tight text-foreground sm:text-4xl">
           Olá, {firstName(session.profile.fullName, session.user.email)}
         </h1>
         <p className="text-sm text-muted-foreground">A sua estadia, pagamentos e pedidos de reparação.</p>
@@ -92,16 +93,23 @@ function StayCard({
   return (
     <section className="space-y-4" aria-labelledby={`stay-${stay.id}`}>
       <Card className="overflow-hidden">
-        <div className="space-y-4 p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 space-y-0.5">
-              <p className="text-[13px] font-medium text-muted-foreground">{stay.businessName}</p>
-              <h2 id={`stay-${stay.id}`} className="text-lg font-semibold tracking-tight text-foreground">
+        <div className="relative overflow-hidden bg-ink px-5 pt-5 pb-6 text-ink-foreground">
+          <AzulejoPattern
+            columns={8}
+            rows={3}
+            className="absolute inset-y-0 -right-6 w-80 text-[#8fa8ff] [mask-image:linear-gradient(to_left,black,transparent)]"
+          />
+          <div className="relative flex items-start justify-between gap-3">
+            <div className="min-w-0 space-y-1">
+              <p className="text-[13px] font-medium text-white/60">{stay.businessName}</p>
+              <h2 id={`stay-${stay.id}`} className="font-display text-3xl leading-tight">
                 {stay.propertyName}
               </h2>
             </div>
             <StayPhaseBadge startsOn={stay.startsOn} endsOn={stay.endsOn} today={today} />
           </div>
+        </div>
+        <div className="space-y-4 p-5">
           <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border">
             <div className="bg-surface-raised px-3.5 py-3">
               <dt className="text-xs text-muted-foreground">Entrada</dt>
